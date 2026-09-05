@@ -1,1 +1,0 @@
-const fs=require('fs');let c=fs.readFileSync('src/components/icons/IlovePdfIcons.tsx','utf8');c=c.replace(/style="mixBlendMode:multiply"/g, "style={{ mixBlendMode: 'multiply' }}");c=c.replace(/style="mixBlendMode:hardLight"/g, "style={{ mixBlendMode: 'hard-light' }}");fs.writeFileSync('src/components/icons/IlovePdfIcons.tsx',c);
