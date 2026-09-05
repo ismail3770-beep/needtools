@@ -1,0 +1,426 @@
+{
+    "organizationId": "6a785837290aba9925eb",
+    "projectId": "6a786172001351dc68bf",
+    "projectName": "needtools",
+    "endpoint": "https://sgp.cloud.appwrite.io/v1",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "protocols": {
+            "rest": true,
+            "graphql": true,
+            "websocket": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 2592000,
+                "limit": null,
+                "sessionsLimit": 10,
+                "passwordHistory": null,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "sites": [
+        {
+            "$id": "6a78aa810000a476b5e9",
+            "name": "NeedTools",
+            "framework": "nextjs",
+            "adapter": "static",
+            "buildRuntime": "node-22",
+            "installCommand": "npm install",
+            "buildCommand": "npm run build",
+            "outputDirectory": "out",
+            "fallbackFile": "index.html",
+            "deploymentRetention": 15,
+            "timeout": 30,
+            "logging": true,
+            "path": "."
+        }
+    ],
+    "tablesDB": [
+        {
+            "$id": "6a789806001b26d8b534",
+            "name": "needtoolsdb",
+            "enabled": true
+        },
+        {
+            "$id": "6a789c378ac8641dcad0",
+            "name": "NeedTools DB",
+            "enabled": true
+        },
+        {
+            "$id": "6a789c5430b868b6d118",
+            "name": "NeedTools DB",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "6a789c3947bc3ac59c78",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"team:admin\")"
+            ],
+            "databaseId": "6a789c378ac8641dcad0",
+            "name": "Contact",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": "email"
+                },
+                {
+                    "key": "subject",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "message",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6a789c3b3bdbfc34867e",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"team:admin\")"
+            ],
+            "databaseId": "6a789c378ac8641dcad0",
+            "name": "Feedback",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "toolSlug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isHelpful",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "comment",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6a789c3bf0f4e735e6c3",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"any\")"
+            ],
+            "databaseId": "6a789c378ac8641dcad0",
+            "name": "Stats",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "toolSlug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6a789c550d30b26daadf",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"team:admin\")"
+            ],
+            "databaseId": "6a789c5430b868b6d118",
+            "name": "Contact",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": "email"
+                },
+                {
+                    "key": "subject",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "message",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 2000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6a789c55de7b155b5a0f",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"team:admin\")"
+            ],
+            "databaseId": "6a789c5430b868b6d118",
+            "name": "Feedback",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "toolSlug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isHelpful",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "comment",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "6a789c569c0e6f0c9714",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"team:admin\")",
+                "update(\"any\")"
+            ],
+            "databaseId": "6a789c5430b868b6d118",
+            "name": "Stats",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "toolSlug",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "usageCount",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "default": 1,
+                    "min": 0,
+                    "max": 999999999
+                },
+                {
+                    "key": "lastUsedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": ""
+                }
+            ],
+            "indexes": []
+        }
+    ],
+    "functions": [
+        {
+            "$id": "compress-pdf",
+            "name": "compress-pdf",
+            "enabled": true,
+            "logging": true,
+            "runtime": "node-22",
+            "buildSpecification": "s-2vcpu-2gb",
+            "runtimeSpecification": "s-2vcpu-2gb",
+            "deploymentRetention": 3,
+            "scopes": [],
+            "events": [],
+            "schedule": "",
+            "timeout": 30,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "ignore": "node_modules\n.tmp",
+            "path": "appwrite/functions/compress-pdf",
+            "execute": [
+                "any"
+            ]
+        },
+        {
+            "$id": "storage-cleanup",
+            "name": "storage-cleanup",
+            "enabled": true,
+            "logging": true,
+            "runtime": "node-22",
+            "buildSpecification": "s-2vcpu-2gb",
+            "runtimeSpecification": "s-2vcpu-2gb",
+            "deploymentRetention": 3,
+            "scopes": [],
+            "events": [],
+            "schedule": "0 * * * *",
+            "timeout": 300,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "ignore": "node_modules\n.tmp",
+            "path": "appwrite/functions/storage-cleanup",
+            "execute": [
+                "any"
+            ]
+        },
+        {
+            "$id": "url-redirector",
+            "name": "url-redirector",
+            "enabled": true,
+            "logging": true,
+            "runtime": "node-22",
+            "buildSpecification": "s-2vcpu-2gb",
+            "runtimeSpecification": "s-2vcpu-2gb",
+            "deploymentRetention": 3,
+            "scopes": [],
+            "events": [],
+            "schedule": "",
+            "timeout": 15,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "ignore": "node_modules\n.tmp",
+            "path": "appwrite/functions/url-redirector",
+            "execute": [
+                "any"
+            ]
+        }
+    ]
+}

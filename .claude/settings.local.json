@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__exa__web_search_exa",
+      "mcp__tavily__tavily_search",
+      "Bash(git clone *)",
+      "Bash(node \"C:/Users/fulba/.claude/ecc-repo/scripts/install-apply.js\" --target claude --profile full --dry-run)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx dpdm *)",
+      "Bash(curl -s http://localhost:3002)",
+      "Bash(npx madge *)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(node test-all.js)",
+      "Bash(git checkout *)",
+      "Bash(npx serve *)",
+      "Bash(cat C:\\\\Users\\\\fulba\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\I--NeedTools\\\\e9728719-8a0c-4c40-b66c-550755aa552b\\\\tasks\\\\b08almq44.output)",
+      "Bash(cat \"C:\\\\\\\\Users\\\\\\\\fulba\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\I--NeedTools\\\\\\\\e9728719-8a0c-4c40-b66c-550755aa552b\\\\\\\\tasks\\\\\\\\b08almq44.output\")",
+      "Bash(mkdir -p .claude)",
+      "Bash(node update_tools.js)",
+      "Bash(npm i *)",
+      "Bash(npm init *)",
+      "Bash(node scripts/update_seo_data.js)",
+      "Bash(ls -la \"I:\\\\premium-url-shortener_v8.0.2\")",
+      "Bash(rm src/app/api/qr/\\\\[id\\\\]/stats/route.ts)",
+      "Bash(ls -la I:/tools)",
+      "WebFetch(domain:lumilist.in)",
+      "WebSearch",
+      "Bash(node scripts/generate_icons.js)",
+      "Bash(node scripts/hide_coming_soon.js)"
+    ]
+  }
+}
