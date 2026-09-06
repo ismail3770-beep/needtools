@@ -36,6 +36,8 @@ const UtmBuilderUI = dynamic(() => import("@/tools-logic/marketing/UtmBuilderUI"
 const LinkAnalyticsUI = dynamic(() => import("@/tools-logic/marketing/LinkAnalyticsUI"), { loading: () => <ToolLoader />, ssr: false });
 const BioPagesUI = dynamic(() => import("@/tools-logic/marketing/BioPagesUI"), { loading: () => <ToolLoader />, ssr: false });
 const CtaOverlaysUI = dynamic(() => import("@/tools-logic/marketing/CtaOverlaysUI"), { loading: () => <ToolLoader />, ssr: false });
+const SplashPagesUI = dynamic(() => import("@/tools-logic/marketing/SplashPagesUI"), { loading: () => <ToolLoader />, ssr: false });
+const LinkCampaignsUI = dynamic(() => import("@/tools-logic/marketing/LinkCampaignsUI"), { loading: () => <ToolLoader />, ssr: false });
 
 // New tools
 const JsonFormatterUI = dynamic(() => import("@/tools-logic/developer/JsonFormatterUI"), { loading: () => <ToolLoader />, ssr: false });
@@ -83,6 +85,8 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
       case "link-analytics": return <LinkAnalyticsUI />;
       case "bio-pages": return <BioPagesUI />;
       case "cta-overlays": return <CtaOverlaysUI />;
+      case "splash-pages": return <SplashPagesUI />;
+      case "link-campaigns": return <LinkCampaignsUI />;
 
       // New tools mapping
       case "json-formatter": return <JsonFormatterUI />;

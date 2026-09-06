@@ -922,6 +922,62 @@ export const TOOLS_REGISTRY: ToolItem[] = [
   // -----------------------------------------------------
 
   {
+    id: "link-campaigns",
+    slug: "link-campaigns",
+    name: "Link Campaigns",
+    shortDescription: "Group tracked links and view aggregate performance.",
+    fullDescription: "Group multiple shortened or tracked links under a named campaign. View aggregate click performance, top-performing links, and compare traffic across all links in the campaign.",
+    category: "marketing",
+    subCategory: "LINKS",
+    iconName: "FolderKanban",
+    tags: ["campaigns", "links", "analytics", "tracking", "marketing"],
+    intentKeywords: ["group links", "campaign analytics", "aggregate clicks", "track marketing campaign"],
+    isClientSide: false,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Create Campaign", description: "Name your campaign and set optional start and end dates." },
+      { title: "2. Add Links", description: "Select existing tracked links to include in this campaign." },
+      { title: "3. View Analytics", description: "See aggregate clicks and compare the performance of each link." }
+    ],
+    features: [
+      { title: "Aggregate Metrics", description: "See the total clicks and unique visitors across all links in your campaign." },
+      { title: "Link Comparison", description: "Quickly identify which link is driving the most traffic within your campaign." }
+    ],
+    faqs: [
+      { question: "Do I need to create new links?", answer: "No, you can group any existing tracked links into a campaign." },
+      { question: "Can a link belong to multiple campaigns?", answer: "Yes, you can add the same link to multiple campaigns for different tracking purposes." }
+    ],
+  },
+  {
+    id: "splash-pages",
+    slug: "splash-pages",
+    name: "Custom Splash Pages",
+    shortDescription: "Create branded interstitial splash pages with countdown timers.",
+    fullDescription: "Design custom splash pages that display your branding, a custom message, and a countdown timer before redirecting visitors to their final destination. Perfect for sponsored links, important announcements, or ad networks.",
+    category: "marketing",
+    subCategory: "PAGES",
+    iconName: "MonitorPlay",
+    tags: ["splash", "landing", "redirect", "interstitial", "marketing", "countdown"],
+    intentKeywords: ["create splash page", "interstitial ad", "countdown redirect", "branded redirect"],
+    isClientSide: true,
+    isNew: true,
+    howToSteps: [
+      { title: "Design Splash", description: "Set your headline, subtext, logo, and background color." },
+      { title: "Set Destination", description: "Enter the URL where visitors will be redirected." },
+      { title: "Configure Timer", description: "Choose the countdown duration and whether skipping is allowed." },
+      { title: "Share Link", description: "Copy your unique splash page link and share it." }
+    ],
+    features: [
+      { title: "Custom Branding", description: "Upload your logo and choose colors that match your brand." },
+      { title: "Countdown Timer", description: "Keep visitors engaged before sending them to the destination." },
+      { title: "Skip Option", description: "Optionally allow users to skip the timer and proceed immediately." }
+    ],
+    faqs: [
+      { question: "What is a splash page?", answer: "A splash page is an interstitial screen shown to visitors before they reach their final destination. It's often used for important announcements, age gates, or branding." },
+      { question: "Can I track views?", answer: "Currently, splash pages do not have built-in analytics, but you can use our Link Shortener as the destination URL to track clicks." }
+    ],
+  },
+  {
     id: "link-shortener",
     isHidden: true,
     slug: "link-shortener",
