@@ -983,6 +983,118 @@ export const TOOLS_REGISTRY: ToolItem[] = [
       { question: "Is this tool completely free?", answer: "Yes, QR Codes is 100% free to use with no hidden costs, no registration required, and no usage limits." }
     ],
   },
+  {
+    id: "utm-builder",
+    slug: "utm-builder",
+    name: "UTM Builder",
+    shortDescription: "Generate UTM-tagged campaign URLs to track your marketing traffic in analytics.",
+    fullDescription: "Create perfectly formatted UTM campaign URLs in seconds. Add utm_source, utm_medium, utm_campaign, and optional term and content parameters to any link so you can measure exactly which campaigns drive clicks, signups, and revenue in Google Analytics or any analytics platform.",
+    category: "marketing",
+    subCategory: "LINKS",
+    iconName: "Link2",
+    tags: ["utm", "campaign", "url", "tracking", "analytics", "marketing", "google analytics", "utm builder"],
+    intentKeywords: [
+      "utm builder",
+      "utm link generator",
+      "campaign url builder",
+      "google analytics url builder",
+      "add utm parameters to url",
+      "utm tag generator",
+      "create tracking link",
+    ],
+    isClientSide: true,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Enter Your URL", description: "Paste the landing page URL you want to tag with campaign parameters." },
+      { title: "2. Fill in UTM Parameters", description: "Add source, medium, campaign name, and optionally term and content to identify your traffic." },
+      { title: "3. Copy & Share", description: "Copy the generated UTM link and use it in your ads, emails, or social posts to track performance." },
+    ],
+    features: [
+      { title: "Live URL Preview", description: "See your tagged URL update in real-time as you type, with proper URL encoding for special characters." },
+      { title: "Smart URL Handling", description: "Automatically handles URLs that already contain query parameters, protocols, and special characters." },
+      { title: "Recent URLs History", description: "Your last 5 generated URLs are saved locally for quick access — no account required." },
+    ],
+    faqs: [
+      { question: "What are UTM parameters?", answer: "UTM (Urchin Tracking Module) parameters are tags you add to URLs so analytics platforms like Google Analytics can tell you exactly where your visitors came from, what campaign brought them, and which link they clicked." },
+      { question: "Is my data secure?", answer: "Yes. The UTM Builder runs 100% in your browser. No URLs or campaign data are ever sent to a server." },
+      { question: "Do I need Google Analytics to use this?", answer: "No. UTM parameters work with virtually any analytics platform — Google Analytics, Mixpanel, Plausible, Matomo, and more." },
+      { question: "Can I use URLs that already have query parameters?", answer: "Yes. The tool intelligently appends UTM parameters to URLs that already contain a query string without breaking existing parameters." },
+    ],
+  },
+  {
+    id: "link-analytics",
+    slug: "link-analytics",
+    name: "Link Analytics",
+    shortDescription: "Track clicks on shortened links and view detailed analytics dashboards.",
+    fullDescription: "Create trackable short links and monitor every click in real time. View total clicks, unique visitors, top referrers, device types, and country breakdowns with beautiful interactive charts. Perfect for marketers, content creators, and anyone who needs to understand how their links perform.",
+    category: "marketing",
+    subCategory: "LINKS",
+    iconName: "BarChart3",
+    tags: ["link", "analytics", "tracking", "clicks", "short url", "campaign", "marketing"],
+    intentKeywords: [
+      "link click tracker",
+      "url analytics",
+      "track link clicks",
+      "link performance",
+      "click tracking tool",
+      "short link analytics",
+    ],
+    isClientSide: false,
+    isPopular: false,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Paste Your URL", description: "Enter any URL you want to track. We generate a unique short code for it." },
+      { title: "2. Share Your Tracked Link", description: "Copy the shortened link and share it anywhere — social media, email, ads." },
+      { title: "3. View Analytics", description: "Watch clicks roll in. See time-series charts, top referrers, devices, and countries." }
+    ],
+    features: [
+      { title: "Real-Time Click Tracking", description: "Every click is recorded instantly with referrer, device, and location data." },
+      { title: "Beautiful Analytics Dashboard", description: "Interactive charts showing clicks over time, top referrers, and geographic breakdowns." },
+      { title: "Unlimited Tracked Links", description: "Create as many tracked links as you need — completely free with no usage caps." }
+    ],
+    faqs: [
+      { question: "How does click tracking work?", answer: "When someone clicks your tracked link, we record the timestamp, referrer, device type, and approximate country before redirecting them to the original URL." },
+      { question: "Is there a limit on tracked links?", answer: "No. You can create unlimited tracked links and view analytics for all of them." },
+      { question: "Do I need an account?", answer: "Yes, you need a free NeedTools account to create and manage your tracked links." }
+    ],
+  },
+  {
+    id: "bio-pages",
+    slug: "bio-pages",
+    name: "Bio Pages",
+    shortDescription: "Create a beautiful link-in-bio page to share all your important links in one place.",
+    fullDescription: "Build your own customizable link-in-bio page in seconds. Add your name, avatar, bio, and as many links as you want. Choose from elegant themes, then share a single URL that showcases everything. Perfect for social media profiles, creators, freelancers, and businesses.",
+    category: "marketing",
+    subCategory: "LINKS",
+    iconName: "UserCircle",
+    tags: ["bio", "link in bio", "linktree", "landing page", "profile", "social media", "creator"],
+    intentKeywords: [
+      "link in bio tool",
+      "create bio page",
+      "linktree alternative",
+      "bio link page",
+      "social media landing page",
+      "free link in bio",
+    ],
+    isClientSide: false,
+    isPopular: false,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Set Up Your Profile", description: "Add your display name, avatar URL, and a short bio to personalize your page." },
+      { title: "2. Add Your Links", description: "Add, reorder, and customize the links you want to share with the world." },
+      { title: "3. Share Your Bio Page", description: "Copy your unique public URL and add it to your social media profiles." }
+    ],
+    features: [
+      { title: "Live Preview", description: "See exactly how your bio page will look on mobile as you build it — changes appear instantly." },
+      { title: "Multiple Themes", description: "Choose from elegant light and dark themes to match your personal brand." },
+      { title: "Drag & Reorder Links", description: "Easily rearrange your links with up/down controls to put the most important ones first." }
+    ],
+    faqs: [
+      { question: "Is my bio page public?", answer: "Yes! Once you create a bio page, anyone with the link can view it. It's designed to be shared on social media." },
+      { question: "Can I change my slug/URL?", answer: "Your slug is set when you create the page. Each slug must be unique across all NeedTools users." },
+      { question: "How many links can I add?", answer: "You can add as many links as you want — there's no limit." }
+    ],
+  },
 
 
 

@@ -32,6 +32,9 @@ const ImageResizerUI = dynamic(() => import("@/tools-logic/image/ImageResizerUI"
 const JpgToPngUI = dynamic(() => import("@/tools-logic/image/JpgToPngUI"), { loading: () => <ToolLoader />, ssr: false });
 const MetaTagCheckerUI = dynamic(() => import("@/tools-logic/seo/MetaTagCheckerUI"), { loading: () => <ToolLoader />, ssr: false });
 const LinkShortenerUI = dynamic(() => import("@/tools-logic/marketing/LinkShortenerUI"), { loading: () => <ToolLoader />, ssr: false });
+const UtmBuilderUI = dynamic(() => import("@/tools-logic/marketing/UtmBuilderUI"), { loading: () => <ToolLoader />, ssr: false });
+const LinkAnalyticsUI = dynamic(() => import("@/tools-logic/marketing/LinkAnalyticsUI"), { loading: () => <ToolLoader />, ssr: false });
+const BioPagesUI = dynamic(() => import("@/tools-logic/marketing/BioPagesUI"), { loading: () => <ToolLoader />, ssr: false });
 
 // New tools
 const JsonFormatterUI = dynamic(() => import("@/tools-logic/developer/JsonFormatterUI"), { loading: () => <ToolLoader />, ssr: false });
@@ -75,7 +78,10 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
       case "jpg-to-png": return <JpgToPngUI />;
       case "meta-tag-checker": return <MetaTagCheckerUI />;
       case "link-shortener": return <LinkShortenerUI />;
-      
+      case "utm-builder": return <UtmBuilderUI />;
+      case "link-analytics": return <LinkAnalyticsUI />;
+      case "bio-pages": return <BioPagesUI />;
+
       // New tools mapping
       case "json-formatter": return <JsonFormatterUI />;
       case "gradient-generator": return <GradientGeneratorUI />;
