@@ -1095,6 +1095,43 @@ export const TOOLS_REGISTRY: ToolItem[] = [
       { question: "How many links can I add?", answer: "You can add as many links as you want — there's no limit." }
     ],
   },
+  {
+    id: "cta-overlays",
+    slug: "cta-overlays",
+    name: "CTA Overlays",
+    shortDescription: "Create call-to-action banners, corner widgets, or modals for your tracked links.",
+    fullDescription: "Design eye-catching CTA overlays — full-width banners, floating corner widgets, or centered modals — and attach them to any shared or tracked link. Customize message, button, colors, and position with a live preview, then generate a snippet or link parameter to apply the overlay on any destination page.",
+    category: "marketing",
+    subCategory: "ENGAGEMENT",
+    iconName: "Megaphone",
+    tags: ["cta", "overlay", "banner", "popup", "call to action", "marketing", "engagement", "widget", "modal"],
+    intentKeywords: [
+      "cta overlay",
+      "call to action banner",
+      "website overlay creator",
+      "popup banner generator",
+      "corner widget",
+      "add cta to link",
+      "overlay on shared link",
+    ],
+    isClientSide: true,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Choose Overlay Type", description: "Pick between a full-width banner, a floating corner widget, or a centered modal dialog." },
+      { title: "2. Customize Content & Style", description: "Write your message, set button text and URL, choose colors and position with live preview." },
+      { title: "3. Copy & Apply", description: "Grab the link parameter or embed snippet to display the overlay on any destination page." },
+    ],
+    features: [
+      { title: "Live Visual Preview", description: "See exactly how your overlay will look over a real page in a mock browser frame — updates instantly as you type." },
+      { title: "Multiple Overlay Styles", description: "Choose from banners, floating corner widgets, or modal dialogs to match your campaign goals." },
+      { title: "One-Click Snippets", description: "Generate a ready-to-paste HTML embed snippet or a simple link parameter to apply the overlay anywhere." },
+    ],
+    faqs: [
+      { question: "How do I apply an overlay to a link?", answer: "Append the generated ?cta=<id> parameter to any tracked or shortened link. When the link is visited, the overlay is injected over the destination page." },
+      { question: "Can I customize the colors?", answer: "Yes! Pick from preset color themes or use the full color pickers to set any background and text color combination." },
+      { question: "Is this tool free?", answer: "Yes, CTA Overlays is 100% free to use with no limits or watermarks." },
+    ],
+  },
 
 
 
