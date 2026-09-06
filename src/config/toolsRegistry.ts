@@ -1096,6 +1096,34 @@ export const TOOLS_REGISTRY: ToolItem[] = [
     ],
   },
   {
+    id: "tracking-pixels",
+    slug: "tracking-pixels",
+    name: "Tracking Pixels",
+    shortDescription: "Manage and deploy tracking pixels for your marketing campaigns.",
+    fullDescription: "Centralize your marketing pixels (Meta, GA4, TikTok, custom) and deploy them to track campaign conversions across your shortened links and bio pages.",
+    category: "marketing",
+    subCategory: "LINKS",
+    iconName: "Target",
+    tags: ["pixel", "tracking", "marketing", "analytics", "meta pixel", "facebook pixel", "google analytics", "ga4", "tiktok"],
+    intentKeywords: ["tracking pixels", "add facebook pixel", "marketing tracker", "pixel manager"],
+    isClientSide: false,
+    isNew: true,
+    howToSteps: [
+      { title: "1. Select Provider", description: "Choose Meta, GA4, TikTok, or Custom Script." },
+      { title: "2. Add Pixel Details", description: "Enter your pixel ID or custom code snippet." },
+      { title: "3. Deploy & Track", description: "Enable the pixel to automatically fire on your associated marketing links." }
+    ],
+    features: [
+      { title: "Centralized Management", description: "Manage all your tracking pixels in one easy-to-use dashboard." },
+      { title: "Custom Scripts", description: "Support for custom HTML/JS snippets beyond standard providers." }
+    ],
+    faqs: [
+      { question: "Which providers are supported?", answer: "We natively support Meta (Facebook), Google Analytics 4, and TikTok, plus custom scripts for any other platform." },
+      { question: "Where do these pixels fire?", answer: "Active pixels will fire on any short links or bio pages you create, giving you full visibility into your traffic." }
+    ]
+  },
+
+  {
     id: "cta-overlays",
     slug: "cta-overlays",
     name: "CTA Overlays",
