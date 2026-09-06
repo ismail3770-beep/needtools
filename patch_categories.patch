@@ -1,0 +1,45 @@
+--- src/config/categories.ts
++++ src/config/categories.ts
+@@ -34,22 +34,6 @@
+     borderClass: "border-blue-200 dark:border-blue-900/50",
+   },
+-  {
+-    id: "seo",
+-    name: "SEO Tools",
+-    description: "Analyze meta tags and check basic website SEO scores.",
+-    iconName: "Search",
+-    colorClass: "text-orange-600 dark:text-orange-400",
+-    bgGradientClass: "from-orange-500 to-amber-600",
+-    borderClass: "border-orange-200 dark:border-orange-900/50",
+-  },
+-  {
+-    id: "ai",
+-    name: "AI",
+-    description: "Summarize large texts using advanced artificial intelligence.",
+-    iconName: "Sparkles",
+-    colorClass: "text-purple-600 dark:text-purple-400",
+-    bgGradientClass: "from-purple-500 to-violet-600",
+-    borderClass: "border-purple-200 dark:border-purple-900/50",
+-  },
+   {
+     id: "developer",
+@@ -95,20 +79,4 @@
+     glow: "",
+   },
+-  seo: {
+-    badgeBg: "bg-orange-50 dark:bg-orange-950/50",
+-    badgeText: "text-orange-700 dark:text-orange-300",
+-    iconBg: "bg-orange-50 dark:bg-orange-500/10",
+-    iconColor: "text-orange-600 dark:text-orange-400",
+-    activeBorder: "border-orange-500",
+-    glow: "",
+-  },
+-  ai: {
+-    badgeBg: "bg-purple-50 dark:bg-purple-950/50",
+-    badgeText: "text-purple-700 dark:text-purple-300",
+-    iconBg: "bg-purple-50 dark:bg-purple-500/10",
+-    iconColor: "text-purple-600 dark:text-purple-400",
+-    activeBorder: "border-purple-500",
+-    glow: "",
+-  },
+   developer: {

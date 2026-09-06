@@ -880,8 +880,8 @@ export const TOOLS_REGISTRY: ToolItem[] = [
 
     fullDescription: "Inspect the meta tags of any URL to see how it appears on Google and social media.",
 
-    category: "seo",
-    subCategory: "META & LINKS",
+    category: "marketing",
+    subCategory: "SEO & META",
 
     iconName: "Tags",
 
@@ -915,11 +915,6 @@ export const TOOLS_REGISTRY: ToolItem[] = [
 
 
 
-  // -----------------------------------------------------
-
-  // 6. AI
-
-  // -----------------------------------------------------
 
   {
     id: "link-campaigns",
@@ -1219,11 +1214,6 @@ export const TOOLS_REGISTRY: ToolItem[] = [
 
 
 
-  // -----------------------------------------------------
-
-  // 6. AI
-
-  // -----------------------------------------------------
 
   // -----------------------------------------------------
   // 7. Developer & Converter Tools (Newly Unlocked!)

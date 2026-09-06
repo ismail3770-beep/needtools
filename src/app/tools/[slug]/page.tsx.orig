@@ -18,6 +18,10 @@ interface UnifiedPageProps {
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
+  if (process.env.NODE_ENV !== "production") {
+    return [];
+  }
+
   const toolParams = TOOLS_REGISTRY.map((tool) => ({
     slug: tool.slug,
   }));

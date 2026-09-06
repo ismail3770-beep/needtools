@@ -85,6 +85,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 // ─── Page Component ──────────────────────────────────────────
 
+export async function generateStaticParams() {
+  try {
+    const { databases } = await import("@/lib/appwrite");
+    const DB_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || process.env.NEXT_PUBLIC_APPWRITE_DB_ID || "6a789c5430b868b6d118";
+    const BIO_PAGES_COL_ID = process.env.NEXT_PUBLIC_APPWRITE_BIO_PAGES_COL_ID || "bio_pages";
+
+    const res = await databases.listDocuments(DB_ID, BIO_PAGES_COL_ID);
+    if (res.documents.length === 0) {
+      return [{ slug: "demo" }];
+    }
+    return res.documents.map((doc) => ({
+      slug: doc.slug,
+    }));
+  } catch (err) {
+    console.error("Error fetching bio pages for static params:", err);
+    return [{ slug: "demo" }];
+  }
+}
+
+export const dynamicParams = false;
+
 export default async function BioPageRoute({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const page = await getBioPage(slug);

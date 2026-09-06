@@ -31,7 +31,18 @@
       "Bash(npm list *)",
       "Bash(ls -la \"I:\\\\Store\\\\premium-url-shortener_v8.0.2\\\\main\")",
       "Bash(grep -n \"className=\\\\`absolute cursor-text\" src/tools-logic/pdf-text-edit/PdfTextEditUI.tsx)",
-      "Bash(curl -sSL -o public/fonts/NotoSansBengali-Regular.ttf \"https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf\")"
+      "Bash(curl -sSL -o public/fonts/NotoSansBengali-Regular.ttf \"https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf\")",
+      "Bash(npm start *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/tools/qr-codes)",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(mkdir -p \"I:\\\\NeedTools\\\\src\\\\app\\\\bio\\\\[slug]\")",
+      "Bash(git diff *)",
+      "Bash(git commit -m 'Add Link Analytics and Bio Pages marketing tools *)",
+      "Bash(patch -p0)",
+      "Bash(mkdir -p src/app/s/\\\\[slug\\\\])",
+      "Bash(grep -A 2 -B 2 \"// 6. AI\" src/config/toolsRegistry.ts)"
     ]
   }
 }
