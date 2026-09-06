@@ -444,10 +444,12 @@ export default function PdfEditorUI() {
     }
 
     const BACKEND_URL =
-      process.env.NEXT_PUBLIC_BACKEND_URL || "";
+      process.env.NEXT_PUBLIC_PDF_EDIT_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "";
 
     if (!BACKEND_URL) {
-      alert("PDF Editor backend is not configured. Please set NEXT_PUBLIC_BACKEND_URL in your environment variables.");
+      alert("PDF Editor backend is not configured. Please set NEXT_PUBLIC_PDF_EDIT_BACKEND_URL in your environment variables.");
       return;
     }
 
