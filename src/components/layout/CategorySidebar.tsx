@@ -103,7 +103,7 @@ export function CategorySidebar({ categoryId, activeToolSlug }: CategorySidebarP
                         {tool.name}
                       </span>
                       {tool.isNew && (
-                        <span className="text-[10px] font-bold text-blue-500 uppercase">Coming Soon</span>
+                        <span className="text-[10px] font-bold text-brand-500 uppercase">Coming Soon</span>
                       )}
                     </div>
                   </div>

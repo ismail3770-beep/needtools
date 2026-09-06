@@ -61,7 +61,7 @@ export function HowToUseSection({ tool }: HowToUseSectionProps) {
               <ul className="space-y-6">
                 {tool.howToSteps.map((step, idx) => (
                   <li key={idx} className="flex gap-4">
-                    <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-sm">
+                    <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-brand-600 text-white font-bold text-sm">
                       {idx + 1}
                     </div>
                     <div className="pt-1 text-sm sm:text-base text-slate-700 dark:text-slate-300">
@@ -78,7 +78,7 @@ export function HowToUseSection({ tool }: HowToUseSectionProps) {
                   {/* Fake File Graphic */}
                   <div className="w-24 h-32 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col p-3">
                     <div className="flex-1 flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
-                      <FileCheck className="w-8 h-8 text-blue-400" />
+                      <FileCheck className="w-8 h-8 text-brand-400" />
                     </div>
                     <div className="h-4 w-full bg-slate-100 dark:bg-slate-700 rounded mt-2" />
                   </div>
@@ -86,11 +86,11 @@ export function HowToUseSection({ tool }: HowToUseSectionProps) {
                   <ChevronRight className="w-8 h-8 text-slate-400" />
 
                   {/* Fake Processed Graphic */}
-                  <div className="w-24 h-32 bg-blue-600 rounded-xl shadow-sm border border-blue-700 flex flex-col p-3 text-white">
-                    <div className="flex-1 flex items-center justify-center border-2 border-dashed border-blue-400/50 rounded-lg">
+                  <div className="w-24 h-32 bg-brand-600 rounded-xl shadow-sm border border-brand-700 flex flex-col p-3 text-white">
+                    <div className="flex-1 flex items-center justify-center border-2 border-dashed border-brand-400/50 rounded-lg">
                        <Layers className="w-8 h-8 text-white" />
                     </div>
-                    <div className="h-4 w-full bg-blue-500 rounded mt-2" />
+                    <div className="h-4 w-full bg-brand-500 rounded mt-2" />
                   </div>
                </div>
             </div>

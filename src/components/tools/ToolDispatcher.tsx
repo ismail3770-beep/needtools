@@ -43,6 +43,7 @@ const MarkdownPreviewerUI = dynamic(() => import("@/tools-logic/developer/Markdo
 const HashGeneratorUI = dynamic(() => import("@/tools-logic/security/HashGeneratorUI"), { loading: () => <ToolLoader />, ssr: false });
 const Base64ConverterUI = dynamic(() => import("@/tools-logic/converter/Base64ConverterUI"), { loading: () => <ToolLoader />, ssr: false });
 const CaseConverterUI = dynamic(() => import("@/tools-logic/text/CaseConverterUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfTextEditUI = dynamic(() => import("@/tools-logic/pdf-text-edit/PdfTextEditUI"), { loading: () => <ToolLoader />, ssr: false });
 
 interface ToolDispatcherProps {
   tool: ToolItem;
@@ -85,6 +86,7 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
       case "hash-generator": return <HashGeneratorUI />;
       case "base64-converter": return <Base64ConverterUI />;
       case "case-converter": return <CaseConverterUI />;
+      case "pdf-text-edit": return <PdfTextEditUI />;
       
       default:
         return (

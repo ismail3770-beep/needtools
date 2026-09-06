@@ -41,6 +41,46 @@ export const TOOLS_REGISTRY: ToolItem[] = [
     ],
   },
   {
+    id: "pdf-text-edit",
+    slug: "pdf-text-edit",
+    name: "PDF Text Editor",
+    shortDescription: "Edit existing text directly inside any PDF — click, change, and download. No backend needed.",
+    fullDescription: "A true WYSIWYG PDF text editor that lets you click on any text in your PDF and edit it directly in your browser. Uses smart text detection to find every text block, then lets you modify the content while preserving the original layout, fonts, and formatting. Everything runs 100% client-side — your files never leave your device.",
+    category: "pdf",
+    subCategory: "EDIT PDF",
+    iconName: "TextCursorInput",
+    tags: ["pdf", "text edit", "edit pdf text", "change pdf text", "modify pdf", "pdf editor", "inline edit"],
+    intentKeywords: [
+      "edit text in pdf",
+      "change text in pdf online",
+      "modify pdf text free",
+      "pdf text editor no upload",
+      "edit existing pdf text",
+      "replace text in pdf",
+      "inline pdf text editing",
+    ],
+    isClientSide: true,
+    isPopular: true,
+    isNew: true,
+    maxFileSizeMB: 10,
+    howToSteps: [
+      { title: "1. Upload Your PDF", description: "Select a text-based PDF file (up to 10MB, 20 pages). Scanned documents are not supported." },
+      { title: "2. Click & Edit Text", description: "Click on any text in the PDF to select it. Type your changes directly — the editor preserves original font size and positioning." },
+      { title: "3. Preview & Download", description: "Preview your edited PDF to verify changes, then download the final result. Original layout and images are fully preserved." },
+    ],
+    features: [
+      { title: "True Inline Text Editing", description: "Click directly on any text block in the PDF to edit it in place — no separate text boxes or overlays needed." },
+      { title: "100% Client-Side Processing", description: "Everything runs in your browser using pdf.js and pdf-lib. Your files are never uploaded to any server." },
+      { title: "Smart Font Matching", description: "Automatically detects font families (serif, sans-serif, mono) and maps to the closest standard PDF font with bold/italic support." },
+    ],
+    faqs: [
+      { question: "Can I edit any PDF?", answer: "This tool works on text-based PDFs. Scanned documents (image-only PDFs) are not supported as they don't contain editable text layers." },
+      { question: "Will the fonts match perfectly?", answer: "We map detected fonts to the closest standard PDF fonts (Helvetica, Times, Courier). For most documents this produces great results, but custom or decorative fonts may look slightly different." },
+      { question: "Is there a file size limit?", answer: "Yes, currently limited to 10MB and 20 pages to ensure smooth performance. These limits may increase in future updates." },
+      { question: "Are my files uploaded anywhere?", answer: "No! Everything runs 100% in your browser. Your PDF never leaves your device — we use pdf.js for reading and pdf-lib for writing, both running locally." },
+    ],
+  },
+  {
 
     id: "pdf-compressor",
 

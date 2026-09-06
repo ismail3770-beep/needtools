@@ -31,7 +31,7 @@ export function RecentTools() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <History className="w-4 h-4 text-brand-500" />
-          <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+          <h2 className="text-sm font-bold text-[#0F172A] dark:text-slate-100 uppercase tracking-wider">
             Your Recently Used Tools
           </h2>
         </div>
@@ -44,12 +44,12 @@ export function RecentTools() {
             <Link
               key={tool.id}
               href={`/tools/${tool.slug}`}
-              className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:bg-brand-50/20 transition-all group"
+              className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-800 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:bg-brand-50/20 transition-all group"
             >
               <div className={`w-8 h-8 rounded-lg ${theme.iconBg} flex items-center justify-center shrink-0 transition-colors`}>
                 <DynamicIcon name={tool.iconName} className={`w-4 h-4 ${theme.iconColor}`} />
               </div>
-              <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">
+              <span className="text-xs font-semibold text-[#0F172A] dark:text-slate-200 truncate">
                 {tool.name}
               </span>
             </Link>

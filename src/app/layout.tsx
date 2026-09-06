@@ -3,11 +3,14 @@ import Script from "next/script";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ServiceWorkerRegistration } from "@/components/providers/ServiceWorkerRegistration";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { CookieConsent } from "@/components/ui/CookieConsent";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700", "800"],
@@ -93,7 +96,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="flex flex-col min-h-screen font-sans bg-slate-50/60 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 antialiased" suppressHydrationWarning>
+      <body className="flex flex-col min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0b0f19] text-[#0F172A] dark:text-slate-100 antialiased" suppressHydrationWarning>
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script
             id="adsense-init"
@@ -162,10 +165,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ToastProvider>
-            <Navbar />
-            <Breadcrumbs />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <AuthProvider>
+              <Navbar />
+              <Breadcrumbs />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <AuthModal />
+              <CookieConsent />
+            </AuthProvider>
           </ToastProvider>
           <ServiceWorkerRegistration />
         </ThemeProvider>

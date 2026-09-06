@@ -130,3 +130,112 @@ export async function recordToolUsage(toolSlug: string) {
     return { success: true, toolSlug, mode: "offline" };
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Pinned Tools & User Tasks (Authenticated users only)
+// ─────────────────────────────────────────────────────────────
+
+const PINNED_TOOLS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_PINNED_TOOLS_COL_ID || "pinned_tools";
+const USER_TASKS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_USER_TASKS_COL_ID || "user_tasks";
+
+export interface PinnedTool {
+  userId: string;
+  toolSlug: string;
+  pinnedAt: string;
+}
+
+export interface UserTask {
+  userId: string;
+  toolSlug: string;
+  fileName: string;
+  fileSize?: number;
+  outputFileId?: string;
+  status: "completed" | "expired";
+  createdAt: string;
+  expiresAt: string;
+}
+
+// ─── Pinned Tools ───────────────────────────────────────────
+
+export async function getPinnedTools(userId: string): Promise<PinnedTool[]> {
+  try {
+    const res = await databases.listDocuments(DB_ID, PINNED_TOOLS_COLLECTION_ID, [
+      Query.equal("userId", userId),
+      Query.orderDesc("pinnedAt"),
+      Query.limit(50),
+    ]);
+    return res.documents.map((d) => ({
+      userId: d.userId,
+      toolSlug: d.toolSlug,
+      pinnedAt: d.pinnedAt,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function savePinnedTool(userId: string, toolSlug: string) {
+  try {
+    return await databases.createDocument(DB_ID, PINNED_TOOLS_COLLECTION_ID, ID_GEN.unique(), {
+      userId,
+      toolSlug,
+      pinnedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") console.error("Pin tool error:", err);
+    return null;
+  }
+}
+
+export async function removePinnedTool(userId: string, toolSlug: string) {
+  try {
+    const res = await databases.listDocuments(DB_ID, PINNED_TOOLS_COLLECTION_ID, [
+      Query.equal("userId", userId),
+      Query.equal("toolSlug", toolSlug),
+    ]);
+    if (res.documents.length > 0) {
+      await databases.deleteDocument(DB_ID, PINNED_TOOLS_COLLECTION_ID, res.documents[0].$id);
+    }
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") console.error("Unpin tool error:", err);
+  }
+}
+
+// ─── User Tasks (Processing History) ────────────────────────
+
+export async function getUserTasks(userId: string): Promise<UserTask[]> {
+  try {
+    const res = await databases.listDocuments(DB_ID, USER_TASKS_COLLECTION_ID, [
+      Query.equal("userId", userId),
+      Query.orderDesc("createdAt"),
+      Query.limit(50),
+    ]);
+    return res.documents.map((d) => ({
+      userId: d.userId,
+      toolSlug: d.toolSlug,
+      fileName: d.fileName,
+      fileSize: d.fileSize,
+      outputFileId: d.outputFileId,
+      status: d.status,
+      createdAt: d.createdAt,
+      expiresAt: d.expiresAt,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function saveUserTask(task: Omit<UserTask, "status" | "expiresAt">) {
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 60 min
+  try {
+    return await databases.createDocument(DB_ID, USER_TASKS_COLLECTION_ID, ID_GEN.unique(), {
+      ...task,
+      status: "completed",
+      expiresAt,
+    });
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") console.error("Save task error:", err);
+    return null;
+  }
+}
+

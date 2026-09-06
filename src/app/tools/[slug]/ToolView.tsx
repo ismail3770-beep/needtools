@@ -7,6 +7,7 @@ import { FaqAccordion } from "@/components/tools/FaqAccordion";
 import { RelatedTools } from "@/components/tools/RelatedTools";
 import { ToolSwitcher } from "@/components/tools/ToolSwitcher";
 import { AdBanner } from "@/components/ads/AdBanner";
+import { SidebarAd } from "@/components/ads/SidebarAd";
 import { JsonLdSchema } from "@/components/seo/JsonLdSchema";
 import { ToolFeedbackWidget } from "@/components/tools/ToolFeedbackWidget";
 import { ToolHeroMockup } from "@/components/tools/ToolHeroMockup";
@@ -55,6 +56,13 @@ export function ToolView({ toolSlug }: { toolSlug: string }) {
               </div>
           </div>
       </section>
+
+      {/* Ad: Header Banner — below hero, above tool workspace */}
+      <div className="border-b border-black/5 dark:border-white/10 bg-[#F8FAFC] dark:bg-neutral-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-x border-black/5 dark:border-white/10 py-4 flex justify-center">
+          <AdBanner variant="header" className="max-w-4xl" />
+        </div>
+      </div>
 
       {/* Main Interactive Tool Workspace Shell */}
       <section id="generator" className="border-b border-black/5 dark:border-white/10 scroll-mt-24">
@@ -132,10 +140,15 @@ export function ToolView({ toolSlug }: { toolSlug: string }) {
           </div>
       </section>
 
-      {/* Ad Placement */}
+      {/* Ad Placement — Result/Post-tool */}
       <div className="border-b border-black/5 dark:border-white/10 bg-slate-50 dark:bg-neutral-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-x border-black/5 dark:border-white/10 py-8 flex justify-center">
-            <AdBanner format="horizontal" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-x border-black/5 dark:border-white/10 py-8">
+          <div className="flex gap-8">
+            <div className="flex-1 flex justify-center">
+              <AdBanner variant="inline" className="max-w-4xl" />
+            </div>
+            <SidebarAd />
+          </div>
         </div>
       </div>
 

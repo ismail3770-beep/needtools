@@ -1,0 +1,122 @@
+--- src/tools-logic/pdf-text-edit/usePdfExport.ts
++++ src/tools-logic/pdf-text-edit/usePdfExport.ts
+@@ -10,6 +10,7 @@
+ 
+ import { useCallback } from "react";
+ import { PDFDocument, StandardFonts, rgb, PDFPage, PDFFont } from "pdf-lib";
++import fontkit from "@pdf-lib/fontkit";
+ import type { TextEdit, MappedFont } from "./types";
+ import { mapFont, collectFontWarnings } from "./fontMapper";
+ 
+@@ -24,6 +25,18 @@
+   return { r, g, b };
+ }
+ 
++/** Check if text contains non-Latin characters (like Bengali) */
++function requiresCustomFont(text: string): boolean {
++  // Bengali block: 0980–09FF
++  const bengaliRegex = /[ঀ-৿]/;
++  return bengaliRegex.test(text);
++}
++
++let customFontBytes: ArrayBuffer | null = null;
++async function getCustomFontBytes(): Promise<ArrayBuffer> {
++  if (!customFontBytes) {
++    const res = await fetch('/fonts/NotoSansBengali-Regular.ttf');
++    customFontBytes = await res.arrayBuffer();
++  }
++  return customFontBytes;
++}
++
+ /** Embed a StandardFont into the PDF document */
+ async function embedStandardFont(
+@@ -104,11 +117,14 @@
+   edits: Record<string, TextEdit>,
+   minFontScale: number = 0.7
+ ): Promise<ExportResult> {
+   const pdfDoc = await PDFDocument.load(originalPdfBytes);
++  pdfDoc.registerFontkit(fontkit);
+   const pages = pdfDoc.getPages();
+ 
+   // Collect only dirty edits
+   const dirtyEdits = Object.values(edits).filter((e) => e.isDirty);
+ 
+   if (dirtyEdits.length === 0) {
+@@ -131,6 +147,7 @@
+   // Font cache to avoid re-embedding
+   const fontCache: Record<string, PDFFont> = {};
++  let customFont: PDFFont | null = null;
+   const allMappings: MappedFont[] = [];
+   const overflowWarnings: string[] = [];
+ 
+@@ -140,16 +157,23 @@
+     const page = pages[pageIdx];
+     const { height: pageHeight } = page.getSize();
+ 
+     for (const edit of pageEdits) {
+-      // 1. Map font
+-      const mapped = mapFont(edit.fontName, edit.isBold, edit.isItalic);
+-      allMappings.push(mapped);
+-
+-      // 2. Get or embed font
+-      const fontKey = mapped.standardFont;
+-      if (!fontCache[fontKey]) {
+-        fontCache[fontKey] = await embedStandardFont(pdfDoc, fontKey);
+-      }
+-      const font = fontCache[fontKey];
++      // 1. Resolve Font (Standard vs Custom)
++      let font: PDFFont;
++      if (requiresCustomFont(edit.newText)) {
++        if (!customFont) {
++          const fontBytes = await getCustomFontBytes();
++          customFont = await pdfDoc.embedFont(fontBytes, { subset: true });
++        }
++        font = customFont;
++      } else {
++        const mapped = mapFont(edit.fontName, edit.isBold, edit.isItalic);
++        allMappings.push(mapped);
++        const fontKey = mapped.standardFont;
++        if (!fontCache[fontKey]) {
++          fontCache[fontKey] = await embedStandardFont(pdfDoc, fontKey);
++        }
++        font = fontCache[fontKey];
++      }
+ 
+       // 3. Calculate PDF coordinates
+@@ -183,12 +207,24 @@
+       // Draw each line
+       const lineHeight = effectiveFontSize * 1.2;
+       for (let i = 0; i < lines.length; i++) {
++        const lineText = lines[i];
+         const drawY = edit.pdfY - i * lineHeight;
+-        page.drawText(lines[i], {
+-          x: edit.pdfX,
++        
++        let drawX = edit.pdfX;
++        const lineWidth = measureTextWidth(lineText, font, effectiveFontSize);
++        
++        if (edit.alignment === 'center') {
++          drawX = edit.pdfX + (edit.pdfWidth - lineWidth) / 2;
++        } else if (edit.alignment === 'right') {
++          drawX = edit.pdfX + edit.pdfWidth - lineWidth;
++        }
++        
++        page.drawText(lineText, {
++          x: drawX,
+           y: drawY,
+           size: effectiveFontSize,
+           font,
+           color: rgb(color.r, color.g, color.b),
+         });
++        
++        if (edit.isUnderline) {
++          page.drawLine({
++            start: { x: drawX, y: drawY - effectiveFontSize * 0.1 },
++            end: { x: drawX + lineWidth, y: drawY - effectiveFontSize * 0.1 },
++            thickness: effectiveFontSize * 0.05,
++            color: rgb(color.r, color.g, color.b),
++          });
++        }
+       }
+     }
+   }

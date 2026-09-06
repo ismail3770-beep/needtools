@@ -17,7 +17,7 @@
 
   body {
     font-family: var(--font-sans);
-    @apply selection:bg-blue-600 selection:text-white dark:selection:bg-blue-500 dark:selection:text-white;
+    @apply selection:bg-indigo-600 selection:text-white dark:selection:bg-indigo-500 dark:selection:text-white;
   }
 }
 
@@ -44,7 +44,7 @@
   content: "";
   position: absolute;
   inset: -1px;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #10b981);
+  background: linear-gradient(45deg, #4f46e5, #06b6d4, #10b981);
   z-index: -1;
   border-radius: inherit;
   filter: blur(8px);

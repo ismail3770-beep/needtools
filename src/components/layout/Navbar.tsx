@@ -1,16 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Search, Menu, X, Shield } from "lucide-react";
+import { Search, Menu, X, Shield, LogOut, LayoutDashboard, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { CommandPalette } from "./CommandPalette";
 import { CATEGORIES } from "@/config/categories";
 import { Logo } from "@/components/ui/Logo";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { getUserInitials } from "@/lib/auth";
 
 export function Navbar() {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user, isLoading, logout, setShowAuthModal } = useAuth();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -24,9 +29,20 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-black/10 dark:border-white/10 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md transition-colors">
+      <header className="sticky top-0 z-40 w-full border-b border-[#E2E8F0] dark:border-white/10 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
           {/* Brand Logo with Authentic Icon Badge */}
@@ -39,13 +55,13 @@ export function Navbar() {
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <button
               onClick={() => setIsCommandOpen(true)}
-              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-black/60 dark:text-white/60 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 group"
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-[#E2E8F0] dark:border-white/10 text-[#64748B] dark:text-white/60 text-sm transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:focus:ring-white/20 group"
             >
               <div className="flex items-center gap-2.5 truncate">
-                <Search className="w-4 h-4 text-black/40 dark:text-white/40 group-hover:text-black/80 dark:group-hover:text-white/80 transition-colors" />
+                <Search className="w-4 h-4 text-[#64748B] dark:text-white/40 group-hover:text-[#0F172A] dark:group-hover:text-white/80 transition-colors" />
                 <span className="truncate">Search 14 tools (e.g. compress photo, qr code)...</span>
               </div>
-              <kbd className="inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-semibold text-black/50 dark:text-white/50 bg-white dark:bg-neutral-900 rounded-md border border-black/10 dark:border-white/10 shadow-sm shrink-0">
+              <kbd className="inline-flex items-center px-2 py-0.5 text-[10px] font-mono font-semibold text-[#64748B] dark:text-white/50 bg-white dark:bg-neutral-900 rounded-md border border-[#E2E8F0] dark:border-white/10 shadow-sm shrink-0">
                 ⌘K
               </kbd>
             </button>
@@ -56,7 +72,7 @@ export function Navbar() {
             {/* Mobile Search Button */}
             <button
               onClick={() => setIsCommandOpen(true)}
-              className="p-2 rounded-xl md:hidden text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10"
+              className="p-2 rounded-xl md:hidden text-[#64748B] dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 border border-[#E2E8F0] dark:border-white/10"
               aria-label="Search tools"
             >
               <Search className="w-4 h-4" />
@@ -65,33 +81,76 @@ export function Navbar() {
             <nav className="hidden lg:flex items-center gap-1.5">
               <Link
                 href="/#popular"
-                className="px-3 py-1.5 text-sm font-semibold text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 text-sm font-semibold text-[#64748B] dark:text-white/60 hover:text-[#0F172A] dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
               >
                 Popular
               </Link>
               <Link
                 href="/tools"
-                className="px-3 py-1.5 text-sm font-semibold text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 text-sm font-semibold text-[#64748B] dark:text-white/60 hover:text-[#0F172A] dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
               >
                 All Tools
               </Link>
               <Link
                 href="/contact"
-                className="px-3 py-1.5 text-sm font-semibold text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                className="px-3 py-1.5 text-sm font-semibold text-[#64748B] dark:text-white/60 hover:text-[#0F172A] dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
               >
                 Contact
               </Link>
             </nav>
 
-            <div className="h-4 w-px bg-black/10 dark:bg-white/10 mx-1 hidden lg:block" />
+            <div className="h-4 w-px bg-[#E2E8F0] dark:bg-white/10 mx-1 hidden lg:block" />
 
             {/* Light / Dark Mode Toggle Button */}
             <ThemeToggle />
 
+            {/* Auth: User Avatar or Sign In */}
+            {!isLoading && (
+              user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setIsUserDropdownOpen(p => !p)}
+                    className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center text-xs font-bold hover:bg-brand-700 transition-colors"
+                    aria-label="User menu"
+                  >
+                    {getUserInitials(user.name)}
+                  </button>
+                  {isUserDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-neutral-900 rounded-xl border border-[#E2E8F0] dark:border-white/10 shadow-xl py-2 z-50 animate-fade-in">
+                      <div className="px-4 py-2.5 border-b border-[#E2E8F0] dark:border-white/10">
+                        <p className="text-sm font-bold text-[#0F172A] dark:text-white truncate">{user.name}</p>
+                        <p className="text-xs text-[#64748B] dark:text-white/50 truncate">{user.email}</p>
+                      </div>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#0F172A] dark:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-[#64748B]" /> Dashboard
+                      </Link>
+                      <button
+                        onClick={() => { logout(); setIsUserDropdownOpen(false); }}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" /> Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition-all shadow-sm"
+                >
+                  <User className="w-4 h-4" /> Sign in
+                </button>
+              )
+            )}
+
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-              className="p-2 rounded-xl lg:hidden text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10"
+              className="p-2 rounded-xl lg:hidden text-[#64748B] dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 border border-[#E2E8F0] dark:border-white/10"
               aria-label="Open menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -101,7 +160,7 @@ export function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-black/5 dark:border-white/10 bg-white dark:bg-neutral-950 p-4 space-y-4 animate-fade-in shadow-2xl">
+          <div className="lg:hidden border-t border-[#E2E8F0] dark:border-white/10 bg-white dark:bg-neutral-950 p-4 space-y-4 animate-fade-in shadow-2xl">
             {/* Theme Toggle row for Mobile */}
             <div className="space-y-1.5">
               <span className="text-[11px] font-bold uppercase tracking-wider text-black/40 dark:text-white/40 px-1">
