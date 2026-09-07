@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+
 import React, { useState, useRef } from "react";
 import { Upload, Download, Trash2, RefreshCw, FileText, Plus, Shield, Check } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -176,6 +178,9 @@ export default function ImageToPdfUI() {
                 <Upload className="w-4 h-4" /> Select Image Files
               </span>
             </div>
+        <div className="mt-4 pointer-events-auto">
+          <CloudImportButtons onFiles={(files) => handleFiles(files as any)} />
+        </div>
 
             <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-rose-700 dark:text-rose-300">
               <Shield className="w-4 h-4 text-rose-600" />

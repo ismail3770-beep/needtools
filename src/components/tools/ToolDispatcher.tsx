@@ -4,8 +4,9 @@ import React, { useEffect } from "react";
 import dynamic from "next/dynamic";
 import { ToolItem } from "@/types/tool";
 import { addRecentTool } from "@/lib/storage";
-import { RefreshCw, Hammer } from "lucide-react";
+import { RefreshCw, Hammer, Lock } from "lucide-react";
 import { ToolFocusWrapper } from "@/components/tools/ToolFocusWrapper";
+import { useUsageLimit } from "@/components/providers/UsageLimitProvider";
 
 // Shared loading state for lazy-loaded tool UIs
 const ToolLoader = () => (
@@ -22,12 +23,19 @@ const PasswordGeneratorUI = dynamic(() => import("@/tools-logic/security/Passwor
 const WordCounterUI = dynamic(() => import("@/tools-logic/text/WordCounterUI"), { loading: () => <ToolLoader />, ssr: false });
 const ImageToPdfUI = dynamic(() => import("@/tools-logic/converter/ImageToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfToJpgUI = dynamic(() => import("@/tools-logic/converter/PdfToJpgUI"), { loading: () => <ToolLoader />, ssr: false });
+const OcrPdfUI = dynamic(() => import("@/tools-logic/converter/OcrPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToWordUI = dynamic(() => import("@/tools-logic/converter/PdfToWordUI"), { loading: () => <ToolLoader />, ssr: false });
+const WordToPdfUI = dynamic(() => import("@/tools-logic/converter/WordToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToExcelUI = dynamic(() => import("@/tools-logic/converter/PdfToExcelUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfEditorUI = dynamic(() => import("@/tools-logic/pdf-editor/PdfEditorUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfCompressorUI = dynamic(() => import("@/tools-logic/pdf/PdfCompressorUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfMergeUI = dynamic(() => import("@/tools-logic/pdf/PdfMergeUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfSplitOrganizeUI = dynamic(() => import("@/tools-logic/pdf/PdfSplitOrganizeUI"), { loading: () => <ToolLoader />, ssr: false });
 const ProtectPdfUI = dynamic(() => import("@/tools-logic/pdf/ProtectPdfUI"), { loading: () => <ToolLoader />, ssr: false });
 const FillAndSignPdfUI = dynamic(() => import("@/tools-logic/pdf/FillAndSignPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const RotatePdfUI = dynamic(() => import("@/tools-logic/pdf/RotatePdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const UnlockPdfUI = dynamic(() => import("@/tools-logic/pdf/UnlockPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const AddPageNumbersUI = dynamic(() => import("@/tools-logic/pdf/AddPageNumbersUI"), { loading: () => <ToolLoader />, ssr: false });
 const ImageResizerUI = dynamic(() => import("@/tools-logic/image/ImageResizerUI"), { loading: () => <ToolLoader />, ssr: false });
 const JpgToPngUI = dynamic(() => import("@/tools-logic/image/JpgToPngUI"), { loading: () => <ToolLoader />, ssr: false });
 const MetaTagCheckerUI = dynamic(() => import("@/tools-logic/seo/MetaTagCheckerUI"), { loading: () => <ToolLoader />, ssr: false });
@@ -56,11 +64,38 @@ interface ToolDispatcherProps {
 }
 
 export function ToolDispatcher({ tool }: ToolDispatcherProps) {
+  const { isLimitReached, setShowPremiumModal } = useUsageLimit();
+
   useEffect(() => {
     addRecentTool(tool.slug);
     import("@/lib/db").then(({ recordToolUsage }) => {
       recordToolUsage(tool.slug).catch(() => {});
     });
+
+    const handleToolProcessed = async (e: Event) => {
+      const customEvent = e as CustomEvent<{ fileName: string }>;
+      const fileName = customEvent.detail?.fileName || "Unknown File";
+      
+      const { account } = await import("@/lib/appwrite");
+      try {
+        const user = await account.get();
+        if (user) {
+          const { saveUserHistory } = await import("@/lib/db");
+          await saveUserHistory({
+            userId: user.$id,
+            toolUsed: tool.slug,
+            fileName: fileName,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to save history:", err);
+      }
+    };
+
+    window.addEventListener("tool_processed", handleToolProcessed);
+    return () => {
+      window.removeEventListener("tool_processed", handleToolProcessed);
+    };
   }, [tool.slug]);
 
   const renderTool = () => {
@@ -74,9 +109,16 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
       case "word-counter": return <WordCounterUI />;
       case "image-to-pdf": return <ImageToPdfUI />;
       case "pdf-to-jpg": return <PdfToJpgUI />;
+      case "ocr-pdf": return <OcrPdfUI />;
+      case "pdf-to-word": return <PdfToWordUI />;
+      case "word-to-pdf": return <WordToPdfUI />;
+      case "pdf-to-excel": return <PdfToExcelUI />;
       case "pdf-split": return <PdfSplitOrganizeUI />;
       case "protect-pdf": return <ProtectPdfUI />;
       case "sign-pdf": return <FillAndSignPdfUI />;
+      case "rotate-pdf": return <RotatePdfUI />;
+      case "unlock-pdf": return <UnlockPdfUI />;
+      case "add-page-numbers": return <AddPageNumbersUI />;
       case "image-resizer": return <ImageResizerUI />;
       case "jpg-to-png": return <JpgToPngUI />;
       case "meta-tag-checker": return <MetaTagCheckerUI />;
@@ -117,5 +159,29 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
     }
   };
 
-  return <ToolFocusWrapper>{renderTool()}</ToolFocusWrapper>;
+  return (
+    <div className="relative">
+      <ToolFocusWrapper>{renderTool()}</ToolFocusWrapper>
+      {isLimitReached && (
+        <div 
+          className="absolute inset-0 z-50 bg-white/50 dark:bg-black/50 backdrop-blur-[2px] flex items-center justify-center rounded-3xl"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowPremiumModal(true);
+          }}
+        >
+          <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-xl border border-brand-100 dark:border-brand-900/50 flex flex-col items-center text-center max-w-sm mx-4 animate-fade-in cursor-pointer hover:scale-105 transition-transform">
+            <div className="w-12 h-12 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center mb-4">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-[#0F172A] dark:text-white mb-2">Usage Limit Reached</h3>
+            <p className="text-sm text-[#64748B] dark:text-white/60 mb-4">You have reached the free guest limit for processing files.</p>
+            <button className="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-semibold text-sm w-full">
+              Unlock Unlimited Access
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

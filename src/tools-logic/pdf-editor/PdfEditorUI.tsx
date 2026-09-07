@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import {
@@ -665,6 +667,9 @@ export default function PdfEditorUI() {
               Choose PDF File
             </span>
           </div>
+        <div className="mt-4 pointer-events-auto">
+          <CloudImportButtons multiple={false} onFiles={(files) => files[0] && handleFileSelection(files[0])} />
+        </div>
         </div>
       )}
 

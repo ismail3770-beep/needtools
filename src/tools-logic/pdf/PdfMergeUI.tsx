@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+
 import React, { useState, useRef, useCallback } from "react";
 import { PDFDocument } from "pdf-lib";
 import { 
@@ -172,6 +174,9 @@ export default function PdfMergeUI() {
               Choose PDF File
             </span>
           </div>
+        <div className="mt-4 pointer-events-auto">
+          <CloudImportButtons multiple={true} onFiles={handleFileSelection} />
+        </div>
         </div>
 
           {/* File List */}

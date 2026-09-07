@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import {
@@ -324,6 +326,7 @@ export default function PdfTextEditUI() {
   };
 
   const handleDownload = () => {
+    window.dispatchEvent(new CustomEvent('tool_processed', { detail: { fileName: 'processed_file' } }));
     if (!resultBlob || !file) return;
     const url = URL.createObjectURL(resultBlob);
     const link = document.createElement("a");
@@ -396,6 +399,9 @@ export default function PdfTextEditUI() {
                   Choose PDF File
                 </span>
               </div>
+        <div className="mt-4 pointer-events-auto">
+          <CloudImportButtons multiple={false} onFiles={(files) => files[0] && handleFileSelection(files[0])} />
+        </div>
             </>
           )}
         </div>

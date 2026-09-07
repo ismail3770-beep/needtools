@@ -11,6 +11,127 @@ export const TOOLS_REGISTRY: ToolItem[] = [
   // -----------------------------------------------------
 
   {
+    id: "ocr-pdf",
+    slug: "ocr-pdf",
+    name: "OCR PDF",
+    shortDescription: "Make scanned PDFs and images searchable by extracting text with OCR.",
+    fullDescription: "Convert scanned documents and images into selectable, searchable PDFs. Our powerful Optical Character Recognition (OCR) supports multiple languages including English and Bengali.",
+    category: "pdf",
+    subCategory: "CONVERT FROM PDF",
+    iconName: "ScanText",
+    tags: ["pdf", "ocr", "text", "extract", "scanner", "searchable", "bengali", "english"],
+    intentKeywords: ["ocr pdf", "make pdf searchable", "extract text from scanned pdf", "bengali ocr", "image to text"],
+    isClientSide: false,
+    isPopular: false,
+    isNew: true,
+    maxFileSizeMB: 20,
+    howToSteps: [
+      { title: "1. Upload File", description: "Select a scanned PDF or image file (up to 20MB)." },
+      { title: "2. Select Language", description: "Choose the language of your document (English, Bengali, or both) for the best accuracy." },
+      { title: "3. Run OCR", description: "Click 'Run OCR' to process the file and download your new searchable PDF." }
+    ],
+    features: [
+      { title: "Multi-Language Support", description: "Highly accurate text recognition for English and Bengali." },
+      { title: "Searchable Output", description: "Returns a standard PDF where you can select, copy, and search for text." },
+      { title: "Image & PDF Input", description: "Works on both scanned PDF documents and standard image files (JPG, PNG)." }
+    ],
+    faqs: [
+      { question: "What is OCR?", answer: "Optical Character Recognition (OCR) is technology that converts images of typed or handwritten text into machine-encoded text you can copy and search." },
+      { question: "Why is there a 20MB limit?", answer: "OCR is a very computationally intensive process. The limit ensures fast processing for all users." },
+      { question: "Does it support handwritten text?", answer: "It is optimized for typed and printed text. Handwritten text may yield lower accuracy." }
+    ],
+  },
+  {
+    id: "pdf-to-word",
+    slug: "pdf-to-word",
+    name: "PDF to Word",
+    shortDescription: "Convert your PDF files to editable Word documents.",
+    fullDescription: "Easily convert your PDF files into Microsoft Word (.docx) format. Edit text, adjust layouts, and reuse content without having to retype everything.",
+    category: "pdf",
+    subCategory: "CONVERT FROM PDF",
+    iconName: "FileText",
+    tags: ["pdf", "word", "docx", "convert", "document"],
+    intentKeywords: ["pdf to word", "convert pdf to docx", "pdf to word converter free", "change pdf to word"],
+    isClientSide: false,
+    isPopular: true,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload PDF", description: "Drag and drop the PDF you want to convert." },
+      { title: "2. Convert", description: "Click the convert button. Our servers will process your file." },
+      { title: "3. Download", description: "Save the fully editable Word document to your device." }
+    ],
+    features: [
+      { title: "High Accuracy", description: "Preserves the original layout, formatting, and images as much as possible." },
+      { title: "Standard Format", description: "Outputs standard .docx files compatible with Microsoft Word, Google Docs, and LibreOffice." },
+      { title: "Secure Processing", description: "Files are processed and immediately deleted. We never store your documents." }
+    ],
+    faqs: [
+      { question: "Can I edit the converted file?", answer: "Yes! The output is a standard Word document (.docx) that you can fully edit." },
+      { question: "Does this work on scanned PDFs?", answer: "If your PDF is an image scan without text, the output will contain those images. For text editing, run the file through our OCR tool first." }
+    ],
+  },
+  {
+    id: "word-to-pdf",
+    slug: "word-to-pdf",
+    name: "Word to PDF",
+    shortDescription: "Convert Word documents (.doc, .docx) to PDF format.",
+    fullDescription: "Turn your Microsoft Word documents into universally compatible PDF files. Preserve your formatting, fonts, and layouts so they look exactly the same on any device.",
+    category: "converter",
+    subCategory: "CONVERT TO PDF",
+    iconName: "FileArchive",
+    tags: ["word", "pdf", "docx", "convert", "document"],
+    intentKeywords: ["word to pdf", "convert docx to pdf", "save word as pdf", "doc to pdf converter"],
+    isClientSide: false,
+    isPopular: true,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload Word Document", description: "Select your .doc or .docx file." },
+      { title: "2. Convert", description: "Our servers will accurately render your document as a PDF." },
+      { title: "3. Download", description: "Get your new PDF file, ready to share or print." }
+    ],
+    features: [
+      { title: "Perfect Formatting", description: "Your margins, fonts, and layouts are preserved exactly as you designed them." },
+      { title: "Universal Compatibility", description: "Create PDFs that can be opened on any computer, tablet, or smartphone." },
+      { title: "Fast & Secure", description: "Lightning-fast conversion with automatic file deletion for your privacy." }
+    ],
+    faqs: [
+      { question: "Will my fonts change?", answer: "No, standard fonts are embedded automatically to ensure your document looks exactly right." },
+      { question: "Are my files stored on your servers?", answer: "No. Your file is processed in memory and instantly deleted once the conversion is complete." }
+    ],
+  },
+  {
+    id: "pdf-to-excel",
+    slug: "pdf-to-excel",
+    name: "PDF to Excel",
+    shortDescription: "Extract tables and data from PDF to Excel spreadsheets.",
+    fullDescription: "Automatically identify and extract data tables from your PDF files and convert them into Microsoft Excel (.xlsx) format. Stop wasting time manually copying and pasting numbers.",
+    category: "pdf",
+    subCategory: "CONVERT FROM PDF",
+    iconName: "Sheet",
+    tags: ["pdf", "excel", "xlsx", "spreadsheet", "table", "extract data"],
+    intentKeywords: ["pdf to excel", "convert pdf to xlsx", "extract table from pdf", "pdf to spreadsheet"],
+    isClientSide: false,
+    isPopular: false,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload PDF", description: "Select a PDF that contains tables or structured data." },
+      { title: "2. Extract Tables", description: "Our engine will scan the document for tables and extract the data." },
+      { title: "3. Download Excel File", description: "Save your new .xlsx file with the data neatly organized in cells." }
+    ],
+    features: [
+      { title: "Smart Extraction", description: "Automatically detects table borders and row/column structures." },
+      { title: "Clean Output", description: "Provides a clean, editable Excel file without merged-cell messes." },
+      { title: "Time Saver", description: "Turns hours of manual data entry into a 5-second process." }
+    ],
+    faqs: [
+      { question: "What if my PDF doesn't have tables?", answer: "The tool specifically looks for table structures. If none are found, it will notify you instead of returning an empty file." },
+      { question: "Does it work on scanned documents?", answer: "No, the PDF must contain actual text data, not just images of tables." }
+    ],
+  },
+  {
     id: "pdf-editor",
     slug: "edit-pdf",
     name: "PDF Editor",
@@ -370,6 +491,99 @@ export const TOOLS_REGISTRY: ToolItem[] = [
 
   },
 
+  {
+    id: "rotate-pdf",
+    slug: "rotate-pdf",
+    name: "Rotate PDF",
+    shortDescription: "Rotate PDF pages 90°, 180°, or 270° quickly and easily.",
+    fullDescription: "Rotate your PDF documents online for free. You can rotate individual pages or the entire document at once. Everything is processed locally in your browser to ensure maximum privacy.",
+    category: "pdf",
+    subCategory: "ORGANIZE PDF",
+    iconName: "RotateCw",
+    tags: ["pdf", "rotate", "turn", "orientation", "landscape", "portrait"],
+    intentKeywords: ["rotate pdf", "turn pdf pages", "change pdf orientation", "rotate pdf online"],
+    isClientSide: true,
+    isPopular: false,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload Your PDF", description: "Drag and drop your PDF file or click to browse." },
+      { title: "2. Rotate Pages", description: "Use the rotation buttons on each page to turn them, or use the 'Rotate All' controls." },
+      { title: "3. Download", description: "Click 'Save Changes' to apply the rotation and download your updated PDF." }
+    ],
+    features: [
+      { title: "Individual Page Rotation", description: "Rotate specific pages that were scanned upside down or sideways." },
+      { title: "Rotate Entire Document", description: "Apply a 90, 180, or 270 degree rotation to all pages simultaneously." },
+      { title: "100% Private", description: "Your files never leave your device. All processing happens in your browser." }
+    ],
+    faqs: [
+      { question: "Is my document secure?", answer: "Yes. This tool processes your PDF entirely within your browser. Your files are never uploaded to our servers." },
+      { question: "Can I rotate just one page?", answer: "Yes, you can rotate individual pages using the controls below each page thumbnail." },
+      { question: "Does this affect the text or images?", answer: "No, it simply changes the orientation of the page. All content remains exactly the same, just rotated." }
+    ],
+  },
+  {
+    id: "unlock-pdf",
+    slug: "unlock-pdf",
+    name: "Unlock PDF",
+    shortDescription: "Remove password protection and security restrictions from a PDF.",
+    fullDescription: "Remove the password from your PDF document. If you know the password to open the file but want to permanently remove it so you don't have to enter it every time, this tool will create an unlocked copy for you. Processed locally for total privacy.",
+    category: "pdf",
+    subCategory: "PDF SECURITY",
+    iconName: "Unlock",
+    tags: ["pdf", "unlock", "remove password", "decrypt", "security"],
+    intentKeywords: ["unlock pdf", "remove password from pdf", "decrypt pdf", "remove pdf security"],
+    isClientSide: true,
+    isPopular: false,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload Protected PDF", description: "Select the password-protected PDF file." },
+      { title: "2. Enter Password", description: "Enter the current password needed to open the document." },
+      { title: "3. Download Unlocked PDF", description: "Click 'Unlock PDF' to permanently remove the password and download the file." }
+    ],
+    features: [
+      { title: "Permanent Unlocking", description: "Removes the password permanently so you never have to type it again." },
+      { title: "Instant Processing", description: "Unlocks the PDF instantly within your browser." },
+      { title: "Total Privacy", description: "Your sensitive documents and passwords are never sent to any server." }
+    ],
+    faqs: [
+      { question: "Can this crack a password I forgot?", answer: "No. This tool requires you to know the current password. It simply saves a new copy of the file with the password requirement removed." },
+      { question: "Is my password sent to your servers?", answer: "No. The entire unlocking process happens locally in your browser. We never see your password or your file." },
+      { question: "Will this change the contents of my PDF?", answer: "No. The contents, formatting, and quality remain 100% identical. Only the encryption is removed." }
+    ],
+  },
+  {
+    id: "add-page-numbers",
+    slug: "add-page-numbers",
+    name: "Add Page Numbers",
+    shortDescription: "Insert page numbers into your PDF documents with custom positioning.",
+    fullDescription: "Easily add page numbers to your PDF files. Customize the position, format, font size, and starting number. Perfect for legal documents, eBooks, and reports. All processing is done securely in your browser.",
+    category: "pdf",
+    subCategory: "EDIT PDF",
+    iconName: "ListOrdered",
+    tags: ["pdf", "page numbers", "pagination", "numbering", "insert numbers"],
+    intentKeywords: ["add page numbers to pdf", "insert page numbers pdf", "pdf pagination tool", "number pdf pages"],
+    isClientSide: true,
+    isPopular: false,
+    isNew: true,
+    maxFileSizeMB: 50,
+    howToSteps: [
+      { title: "1. Upload Your PDF", description: "Select the PDF file you want to add page numbers to." },
+      { title: "2. Customize Settings", description: "Choose the position, format (e.g., 'Page 1 of 5'), and where the numbering should start." },
+      { title: "3. Apply & Download", description: "Click 'Add Page Numbers' to generate your updated PDF instantly." }
+    ],
+    features: [
+      { title: "Flexible Formatting", description: "Choose from multiple formats like '1', 'Page 1', or 'Page 1 of 10'." },
+      { title: "Custom Positioning", description: "Place numbers exactly where you want them: top, bottom, left, right, or center." },
+      { title: "Skip Cover Pages", description: "Choose a specific page to start numbering from, perfect for documents with cover pages or TOCs." }
+    ],
+    faqs: [
+      { question: "Can I skip the first few pages?", answer: "Yes. Use the 'Start numbering on page' setting to skip cover pages or table of contents." },
+      { question: "Will the numbers cover my text?", answer: "Page numbers are added in the margins (approx. 36 points from the edge). If your document has very small margins, it might overlap slightly." },
+      { question: "Is my document uploaded to a server?", answer: "No. The page numbers are added directly in your browser. Your document is completely private." }
+    ],
+  },
   {
 
     id: "protect-pdf",

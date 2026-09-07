@@ -53,19 +53,27 @@ export async function compressPdfWithBackend(
 }
 
 /**
- * Send a PDF file + edits payload to the PDF Edit microservice.
- * @param fileId  The Appwrite storage fileId of the uploaded original PDF.
- * @param edits   Page-keyed edits object.
- * @returns       The newFileId of the processed PDF in Appwrite storage.
+ * Encrypt a PDF with password protection via the PDF Compress microservice.
+ * Uses PyMuPDF AES-256 encryption — preserves all original content.
+ * @param file          The PDF File object from the browser.
+ * @param userPassword  Password required to open the document.
+ * @param permissions   Array of permission strings: "print", "modify", "copy", "annot-forms".
  */
-export async function editPdfWithBackend(
-  fileId: string,
-  edits: Record<string, unknown>
-): Promise<string> {
-  const response = await fetch(`${PDF_EDIT_URL}/api/edit-pdf`, {
+export async function protectPdfWithBackend(
+  file: File,
+  userPassword: string,
+  permissions: string[] = []
+): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("user_password", userPassword);
+  if (permissions.length > 0) {
+    formData.append("permissions", permissions.join(","));
+  }
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/protect`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fileId, edits }),
+    body: formData,
   });
 
   if (!response.ok) {
@@ -76,8 +84,136 @@ export async function editPdfWithBackend(
     );
   }
 
-  const data = await response.json();
-  return data.newFileId as string;
+  return response.blob();
+}
+
+/**
+ * Send a PDF file + edits payload to the PDF Edit microservice.
+ * Uploads the actual file as FormData along with the edits JSON.
+ * @param file   The original PDF File object from the browser.
+ * @param edits  Page-keyed edits object (stringified as JSON).
+ * @returns      The edited PDF as a Blob.
+ */
+export async function editPdfWithBackend(
+  file: File,
+  edits: Record<string, unknown>
+): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+  formData.append("edits", JSON.stringify(edits));
+
+  const response = await fetch(`${PDF_EDIT_URL}/api/edit-pdf`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      (errorData as { detail?: string }).detail ||
+        `Backend error: ${response.status}`
+    );
+  }
+
+  return response.blob();
+}
+
+/**
+ * Run OCR on a PDF or Image.
+ */
+export async function ocrPdfWithBackend(
+  file: File,
+  lang: string = "eng"
+): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("lang", lang);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/ocr`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as any).detail || `OCR failed: ${response.status}`);
+  }
+
+  return response.blob();
+}
+
+/**
+ * Convert PDF to Word
+ */
+export async function pdfToWordWithBackend(file: File): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/pdf-to-word`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
+  }
+
+  return response.blob();
+}
+
+/**
+ * Convert Word to PDF
+ */
+export async function wordToPdfWithBackend(file: File): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/word-to-pdf`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
+  }
+
+  return response.blob();
+}
+
+/**
+ * Convert PDF to Excel
+ */
+export async function pdfToExcelWithBackend(file: File): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/pdf-to-excel`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
+  }
+
+  return response.blob();
+}
+
+/**
+ * Trigger a browser download of a file Blob.
+ */
+export function downloadFileBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /**
@@ -88,10 +224,10 @@ export function downloadPdfBlob(blob: Blob, originalFilename: string) {
   const a = document.createElement("a");
   a.href = url;
 
-  const nameParts = originalFilename.split(".");
-  const ext = nameParts.pop();
-  const name = nameParts.join(".");
-  a.download = `${name}_compressed.${ext}`;
+  const lastDot = originalFilename.lastIndexOf(".");
+  const name = lastDot > 0 ? originalFilename.slice(0, lastDot) : originalFilename;
+  const ext = lastDot > 0 ? originalFilename.slice(lastDot) : ".pdf";
+  a.download = `${name}_compressed${ext}`;
 
   document.body.appendChild(a);
   a.click();
