@@ -97,15 +97,6 @@ export function AdminLogin({ onLoginSuccess }: { onLoginSuccess: () => void }) {
             )}
           </button>
           
-          {process.env.NODE_ENV === "development" && (
-            <button
-              type="button"
-              onClick={onLoginSuccess}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 py-3.5 font-semibold text-slate-600 transition-all hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
-            >
-              Skip Login (Local Testing Only)
-            </button>
-          )}
         </form>
       </div>
     </div>

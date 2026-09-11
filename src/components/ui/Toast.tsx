@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { CheckCircle2, AlertTriangle, Info, X } from "lucide-react";
 
-type ToastKind = "success" | "error" | "info";
+type ToastKind = "success" | "error" | "info" | "warning";
 
 interface ToastItem {
   id: number;
@@ -35,6 +35,10 @@ const KIND_STYLES: Record<ToastKind, { icon: React.ReactNode; classes: string }>
   error: {
     icon: <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />,
     classes: "border-rose-200 dark:border-rose-800",
+  },
+  warning: {
+    icon: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
+    classes: "border-amber-200 dark:border-amber-800",
   },
   info: {
     icon: <Info className="w-4 h-4 text-blue-500 shrink-0" />,

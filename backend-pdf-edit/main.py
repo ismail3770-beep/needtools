@@ -6,6 +6,7 @@ import os
 import uuid
 import io
 import json
+import time
 
 from pdf_processor import process_pdf
 
@@ -16,7 +17,7 @@ app = FastAPI(title="NeedTools PDF Edit Service")
 # ---------------------------------------------------------------------------
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "https://needtools.appwrite.app,https://needtools.vercel.app,http://localhost:3000,http://localhost:3001"
+    "https://needtools.app,https://needtools.appwrite.app,https://needtools.vercel.app,http://localhost:3000,http://localhost:3001"
 ).split(",")
 
 app.add_middleware(
@@ -118,11 +119,90 @@ async def edit_pdf(
         print(f"[edit_pdf] Error: {exc}")
         raise HTTPException(status_code=500, detail=str(exc))
 
+
     finally:
         for p in (input_path, output_path):
             if os.path.exists(p):
                 os.remove(p)
 
+
+# ---------------------------------------------------------------------------
+# Background Cleanup Task (Every Hour, > 7 Days Old)
+# ---------------------------------------------------------------------------
+from datetime import datetime, timedelta, timezone
+
+async def cleanup_task():
+    while True:
+        try:
+            print("[cleanup] Running hourly storage cleanup (7-day policy)...")
+            
+            # 1. Clean local temporary files older than 7 days
+            now = time.time()
+            seven_days_ago_ts = now - (7 * 24 * 60 * 60)
+            
+            local_deleted = 0
+            if os.path.exists(TMP_DIR):
+                for file in os.listdir(TMP_DIR):
+                    if file.endswith(".pdf"):
+                        file_path = os.path.join(TMP_DIR, file)
+                        try:
+                            if os.path.getmtime(file_path) < seven_days_ago_ts:
+                                os.remove(file_path)
+                                local_deleted += 1
+                        except Exception:
+                            pass
+            print(f"[cleanup] Deleted {local_deleted} local files.")
+
+            # 2. Clean Appwrite Storage bucket (Temporary Files)
+            try:
+                from appwrite_client import storage, APPWRITE_STORAGE_BUCKET_ID
+                from appwrite.query import Query
+                
+                seven_days_ago_iso = (datetime.now(timezone.utc) - timedelta(days=7)).isoformat()
+                
+                buckets_to_clean = [APPWRITE_STORAGE_BUCKET_ID, "TemporaryDownloads"]
+
+                for bucket in buckets_to_clean:
+                    has_more = True
+                    appwrite_deleted = 0
+                    
+                    while has_more:
+                        try:
+                            response = storage.list_files(
+                                bucket_id=bucket,
+                                queries=[
+                                    Query.less_than("$createdAt", seven_days_ago_iso),
+                                    Query.limit(100)
+                                ]
+                            )
+                            
+                            files = response.get("files", [])
+                            if not files:
+                                has_more = False
+                                break
+                                
+                            for f in files:
+                                storage.delete_file(bucket, f["$id"])
+                                appwrite_deleted += 1
+                        except Exception as e:
+                            # Might fail if bucket doesn't exist yet
+                            has_more = False
+                            
+                    print(f"[cleanup] Deleted {appwrite_deleted} Appwrite files from bucket {bucket}.")
+            except ImportError:
+                pass
+            except Exception as e:
+                print(f"[cleanup] Appwrite cleanup error: {e}")
+
+        except Exception as e:
+            print(f"[cleanup] Global error: {e}")
+            
+        # Sleep for 1 hour (3600 seconds)
+        await asyncio.sleep(3600)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(cleanup_task())
 
 if __name__ == "__main__":
     import uvicorn

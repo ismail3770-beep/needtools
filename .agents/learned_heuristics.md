@@ -11,3 +11,7 @@
 
 ## 3. Communication Style
 - **Speak Directly and Submissively:** When dealing with high-stress situations or frustrated users, adopt a submissive, apologetic, and highly empathetic tone. Acknowledge their time and effort.
+
+## 4. Architecture & Systems
+- **Microservices Setup:** Backend was split into `backend-pdf-edit` and `backend-pdf-compress` on 2026-09-07 to ensure independent scaling. #architecture 
+- **Obsidian Setup:** This knowledge base is connected to Obsidian for better auto-memorization. Future insights should include relevant #tags and [[Links]]. #system

@@ -59,6 +59,25 @@ const Base64ConverterUI = dynamic(() => import("@/tools-logic/converter/Base64Co
 const CaseConverterUI = dynamic(() => import("@/tools-logic/text/CaseConverterUI"), { loading: () => <ToolLoader />, ssr: false });
 const PdfTextEditUI = dynamic(() => import("@/tools-logic/pdf-text-edit/PdfTextEditUI"), { loading: () => <ToolLoader />, ssr: false });
 
+// Additional PDF Tools
+const RemovePagesUI = dynamic(() => import("@/tools-logic/pdf/RemovePagesUI"), { loading: () => <ToolLoader />, ssr: false });
+const OrganizePdfUI = dynamic(() => import("@/tools-logic/pdf/OrganizePdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const GrayscalePdfUI = dynamic(() => import("@/tools-logic/pdf/GrayscalePdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const ExtractPdfPagesUI = dynamic(() => import("@/tools-logic/pdf/ExtractPdfPagesUI"), { loading: () => <ToolLoader />, ssr: false });
+const RepairPdfUI = dynamic(() => import("@/tools-logic/pdf/RepairPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const PngToPdfUI = dynamic(() => import("@/tools-logic/converter/PngToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const BmpToPdfUI = dynamic(() => import("@/tools-logic/converter/BmpToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const TiffToPdfUI = dynamic(() => import("@/tools-logic/converter/TiffToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const PptToPdfUI = dynamic(() => import("@/tools-logic/converter/PptToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const TxtToPdfUI = dynamic(() => import("@/tools-logic/converter/TxtToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const ExcelToPdfUI = dynamic(() => import("@/tools-logic/converter/ExcelToPdfUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToPngUI = dynamic(() => import("@/tools-logic/pdf/PdfToPngUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToBmpUI = dynamic(() => import("@/tools-logic/pdf/PdfToBmpUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToTiffUI = dynamic(() => import("@/tools-logic/pdf/PdfToTiffUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToPptUI = dynamic(() => import("@/tools-logic/pdf/PdfToPptUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToTxtUI = dynamic(() => import("@/tools-logic/pdf/PdfToTxtUI"), { loading: () => <ToolLoader />, ssr: false });
+const PdfToZipUI = dynamic(() => import("@/tools-logic/pdf/PdfToZipUI"), { loading: () => <ToolLoader />, ssr: false });
+
 interface ToolDispatcherProps {
   tool: ToolItem;
 }
@@ -141,6 +160,25 @@ export function ToolDispatcher({ tool }: ToolDispatcherProps) {
       case "base64-converter": return <Base64ConverterUI />;
       case "case-converter": return <CaseConverterUI />;
       case "pdf-text-edit": return <PdfTextEditUI />;
+
+      // Additional PDF tools mapping
+      case "remove-pages": return <RemovePagesUI />;
+      case "organize-pdf": return <OrganizePdfUI />;
+      case "grayscale-pdf": return <GrayscalePdfUI />;
+      case "extract-pdf-pages": return <ExtractPdfPagesUI />;
+      case "repair-pdf": return <RepairPdfUI />;
+      case "png-to-pdf": return <PngToPdfUI />;
+      case "bmp-to-pdf": return <BmpToPdfUI />;
+      case "tiff-to-pdf": return <TiffToPdfUI />;
+      case "ppt-to-pdf": return <PptToPdfUI />;
+      case "txt-to-pdf": return <TxtToPdfUI />;
+      case "excel-to-pdf": return <ExcelToPdfUI />;
+      case "pdf-to-png": return <PdfToPngUI />;
+      case "pdf-to-bmp": return <PdfToBmpUI />;
+      case "pdf-to-tiff": return <PdfToTiffUI />;
+      case "pdf-to-ppt": return <PdfToPptUI />;
+      case "pdf-to-txt": return <PdfToTxtUI />;
+      case "pdf-to-zip": return <PdfToZipUI />;
       
       default:
         return (

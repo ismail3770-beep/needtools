@@ -10,8 +10,8 @@ module.exports = async ({ req, res, log, error }) => {
     const storage = new Storage(client);
     const bucketId = process.env.APPWRITE_STORAGE_BUCKET_ID || "6a8f4c4f0482bf2aa92d";
 
-    // 1 hour ago
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    // 7 days ago
+    const oneHourAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     
     log(`Starting cleanup. Deleting files older than ${oneHourAgo} in bucket ${bucketId}`);
 

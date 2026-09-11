@@ -1,4 +1,5 @@
 "use client";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
 import React, { useState, useRef } from "react";
 import { Upload, Download, RefreshCcw, Image as ImageIcon, ArrowRight } from "lucide-react";
@@ -64,6 +65,7 @@ export default function JpgToPngUI() {
   };
 
   const handleDownload = () => {
+    window.dispatchEvent(new CustomEvent('tool_processed', { detail: { fileName: 'processed_file' } }));
     if (!convertedUrl || !selectedFile) return;
     const link = document.createElement("a");
     link.href = convertedUrl;
@@ -95,23 +97,18 @@ export default function JpgToPngUI() {
       </div>
 
       {!selectedFile ? (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-black/20 dark:border-white/20 rounded-3xl p-12 text-center hover:bg-black/5 dark:bg-white/5 dark:hover:bg-black/80 dark:bg-white/10/50 transition-colors cursor-pointer group"
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileSelect}
-            accept="image/jpeg, image/jpg"
-            className="hidden"
-          />
-          <div className="w-16 h-16 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-            <Upload className="w-8 h-8" />
-          </div>
-          <p className="font-semibold text-black dark:text-white text-lg">Click to select a JPG image</p>
-          <p className="text-black/50 dark:text-white/50 text-sm mt-1">Only .jpg or .jpeg allowed</p>
-        </div>
+        <ToolDropzone
+          onFiles={(files) => {
+            if (files[0]) {
+              handleFileSelect({ target: { files: [files[0]] } } as any);
+            }
+          }}
+          accept="image/jpeg,image/jpg"
+          multiple={false}
+          fileTypeLabel="JPG images"
+          buttonText="Choose Files"
+          iconType="image"
+        />
       ) : (
         <div className="max-w-2xl mx-auto space-y-6 bg-white dark:bg-neutral-950 p-6 rounded-2xl border border-black/10 dark:border-white/10 shadow-sm">
           <div className="flex items-center justify-between px-4 py-3 bg-black/5 rounded-xl border border-black/10 dark:border-white/10">

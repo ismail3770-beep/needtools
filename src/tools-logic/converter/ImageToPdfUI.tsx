@@ -1,6 +1,6 @@
 "use client";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
 
 import React, { useState, useRef } from "react";
 import { Upload, Download, Trash2, RefreshCw, FileText, Plus, Shield, Check } from "lucide-react";
@@ -133,61 +133,14 @@ export default function ImageToPdfUI() {
     <div className="space-y-6">
       {/* Upload Zone */}
       {images.length === 0 ? (
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setIsDragOver(true);
-          }}
-          onDragLeave={() => setIsDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setIsDragOver(false);
-            handleFiles(e.dataTransfer.files);
-          }}
-          onClick={() => fileInputRef.current?.click()}
-          className={`border-2 border-dashed rounded-3xl p-8 sm:p-14 text-center cursor-pointer transition-all duration-200 ${
-            isDragOver
-              ? "border-rose-500 bg-rose-50/60 dark:bg-rose-950/30 scale-[0.99]"
-              : "border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5/50 dark:bg-neutral-950/40 hover:border-rose-500 hover:bg-rose-50/30 dark:hover:bg-rose-950/10"
-          }`}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-            onChange={(e) => handleFiles(e.target.files)}
-          />
-          <div className="max-w-md mx-auto space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-black dark:bg-white text-white flex items-center justify-center mx-auto shadow-lg shadow-sm">
-              <FileText className="w-8 h-8" />
-            </div>
-            <div className="space-y-1.5">
-              <h3 className="font-extrabold text-lg sm:text-xl text-black dark:text-white">
-                Select images to convert into PDF
-              </h3>
-              <p className="text-xs sm:text-sm text-black/50 dark:text-white/50">
-                Choose multiple JPG, PNG, or WebP photos
-              </p>
-            </div>
-
-            {/* Prominent Action Button */}
-            <div className="pt-2">
-              <span className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-black dark:bg-white hover:bg-black/90 dark:hover:bg-white/90 text-white dark:text-black font-bold text-sm shadow-md shadow-sm transition-transform active:scale-95">
-                <Upload className="w-4 h-4" /> Select Image Files
-              </span>
-            </div>
-        <div className="mt-4 pointer-events-auto">
-          <CloudImportButtons onFiles={(files) => handleFiles(files as any)} />
-        </div>
-
-            <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-rose-700 dark:text-rose-300">
-              <Shield className="w-4 h-4 text-rose-600" />
-              <span>100% Client-Side • No files uploaded to servers</span>
-            </div>
-          </div>
-        </div>
+        <ToolDropzone
+          onFiles={(newFiles) => handleFiles(newFiles as any)}
+          accept="image/jpeg,image/png,image/webp"
+          multiple={true}
+          fileTypeLabel="images"
+          buttonText="Choose Files"
+          iconType="image"
+        />
       ) : (
         /* Images List & Settings */
         <div className="space-y-6 animate-fade-in">

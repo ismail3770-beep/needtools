@@ -27,7 +27,15 @@ export default function LinkShortenerUI() {
       // Generate a random 6-character alias if none provided
       const finalAlias = alias || Math.random().toString(36).substring(2, 8);
       
-      const { databases } = await import("@/lib/appwrite");
+      const { account, databases } = await import("@/lib/appwrite");
+      
+      let userId = "anonymous";
+      try {
+        const user = await account.get();
+        if (user) userId = user.$id;
+      } catch (e) {
+        // user not logged in
+      }
       
       const dbId = process.env.NEXT_PUBLIC_APPWRITE_DB_ID || "6a789c5430b868b6d118";
       const colId = process.env.NEXT_PUBLIC_APPWRITE_LINKS_COL_ID || "6a9b34076dad77e641a1"; // From setup-links output
@@ -39,13 +47,14 @@ export default function LinkShortenerUI() {
         {
           alias: finalAlias,
           url: targetUrl,
+          userId: userId,
           createdAt: new Date().toISOString()
         }
       );
 
       // The frontend URL would depend on the deployment, e.g., window.location.origin
       const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://needtools.app';
-      setShortUrl(`${baseUrl}/l/${finalAlias}`);
+      setShortUrl(`${baseUrl}/s/${finalAlias}`);
       
     } catch (err: any) {
       console.error(err);

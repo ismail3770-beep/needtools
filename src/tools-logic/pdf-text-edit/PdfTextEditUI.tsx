@@ -1,6 +1,7 @@
 "use client";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
@@ -365,46 +366,13 @@ export default function PdfTextEditUI() {
 
       {/* Upload Zone */}
       {!file && (
-        <div
-          ref={dropZoneRef}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className="relative group flex flex-col items-center justify-center p-12 border-2 border-dashed border-black/20 dark:border-white/20 rounded-3xl bg-black/5 dark:bg-white/5 transition-all hover:bg-black/10 dark:hover:bg-white/10 hover:border-blue-400 dark:hover:border-blue-500/50 cursor-pointer overflow-hidden"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {isLoading ? (
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-              <p className="text-sm text-black/60 dark:text-white/60 font-medium">
-                Analyzing PDF text content...
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="w-16 h-16 mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
-                <UploadCloud className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-bold text-black dark:text-white mb-2">
-                Upload PDF to Edit Text
-              </h3>
-              <p className="text-sm text-black/50 dark:text-white/50 text-center max-w-sm mb-4">
-                Click on any text in your PDF to edit it directly. Works on text-based PDFs (not scanned documents).
-              </p>
-              <p className="text-xs text-black/30 dark:text-white/30 mb-4">
-                Max {MAX_FILE_SIZE_MB}MB, up to {MAX_PAGES} pages
-              </p>
-              <div className="mt-2 pointer-events-none">
-                <span className="inline-flex items-center gap-2 px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-xl shadow-sm transition-all">
-                  Choose PDF File
-                </span>
-              </div>
-        <div className="mt-4 pointer-events-auto">
-          <CloudImportButtons multiple={false} onFiles={(files) => files[0] && handleFileSelection(files[0])} />
-        </div>
-            </>
-          )}
-        </div>
+        <ToolDropzone
+          onFiles={(files) => { if (files[0]) handleFileSelection(files[0]); }}
+          accept="application/pdf"
+          multiple={false}
+          fileTypeLabel="PDFs"
+          buttonText="Choose Files"
+        />
       )}
 
       {/* Preview Modal */}

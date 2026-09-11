@@ -50,12 +50,12 @@
             "$id": "6a78aa810000a476b5e9",
             "name": "NeedTools",
             "framework": "nextjs",
-            "adapter": "static",
+            "adapter": "ssr",
             "buildRuntime": "node-22",
             "installCommand": "npm install",
-            "buildCommand": "npm run build",
-            "outputDirectory": "out",
-            "fallbackFile": "index.html",
+            "buildCommand": "npm run build && cp -r public .next/standalone/ && cp -r .next/static .next/standalone/.next/static && cp .env* .next/standalone/ || true",
+            "startCommand": "node server.js",
+            "outputDirectory": ".next/standalone",
             "deploymentRetention": 15,
             "timeout": 30,
             "logging": true,
@@ -98,16 +98,16 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "email",
                     "type": "string",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": "email"
+                    "format": "email",
+                    "default": null
                 },
                 {
                     "key": "subject",
@@ -115,8 +115,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "message",
@@ -124,16 +124,16 @@
                     "required": true,
                     "array": false,
                     "size": 2000,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "createdAt",
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": []
@@ -156,8 +156,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "isHelpful",
@@ -172,7 +172,6 @@
                     "required": false,
                     "array": false,
                     "size": 1000,
-                    "default": null,
                     "encrypt": false
                 },
                 {
@@ -180,8 +179,8 @@
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": []
@@ -204,8 +203,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 }
             ],
             "indexes": []
@@ -228,16 +227,16 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "email",
                     "type": "string",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": "email"
+                    "format": "email",
+                    "default": null
                 },
                 {
                     "key": "subject",
@@ -245,8 +244,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "message",
@@ -254,16 +253,16 @@
                     "required": true,
                     "array": false,
                     "size": 2000,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "createdAt",
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": []
@@ -286,8 +285,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "isHelpful",
@@ -302,7 +301,6 @@
                     "required": false,
                     "array": false,
                     "size": 1000,
-                    "default": null,
                     "encrypt": false
                 },
                 {
@@ -310,8 +308,8 @@
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": []
@@ -334,8 +332,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "usageCount",
@@ -351,8 +349,8 @@
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": []
@@ -375,8 +373,8 @@
                     "required": true,
                     "array": false,
                     "size": 36,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "toolSlug",
@@ -384,24 +382,30 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "pinnedAt",
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": [
                 {
                     "key": "userId_toolSlug",
                     "type": "unique",
-                    "attributes": ["userId", "toolSlug"],
-                    "orders": ["ASC", "ASC"]
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ],
+                    "columns": [
+                        "userId",
+                        "toolSlug"
+                    ]
                 }
             ]
         },
@@ -422,8 +426,8 @@
                     "required": true,
                     "array": false,
                     "size": 36,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "toolSlug",
@@ -431,8 +435,8 @@
                     "required": true,
                     "array": false,
                     "size": 255,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "fileName",
@@ -440,8 +444,8 @@
                     "required": true,
                     "array": false,
                     "size": 500,
-                    "default": null,
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "fileSize",
@@ -458,7 +462,6 @@
                     "required": false,
                     "array": false,
                     "size": 255,
-                    "default": null,
                     "encrypt": false
                 },
                 {
@@ -467,32 +470,100 @@
                     "required": true,
                     "array": false,
                     "size": 20,
-                    "default": "completed",
-                    "encrypt": false
+                    "encrypt": false,
+                    "default": null
                 },
                 {
                     "key": "createdAt",
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 },
                 {
                     "key": "expiresAt",
                     "type": "datetime",
                     "required": true,
                     "array": false,
-                    "default": null,
-                    "format": ""
+                    "format": "",
+                    "default": null
                 }
             ],
             "indexes": [
                 {
                     "key": "userId_createdAt",
                     "type": "key",
-                    "attributes": ["userId", "createdAt"],
-                    "orders": ["ASC", "DESC"]
+                    "orders": [
+                        "ASC",
+                        "DESC"
+                    ],
+                    "columns": [
+                        "userId",
+                        "createdAt"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "user_history",
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")"
+            ],
+            "databaseId": "6a789c5430b868b6d118",
+            "name": "User History",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "encrypt": false,
+                    "default": null
+                },
+                {
+                    "key": "toolUsed",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "encrypt": false,
+                    "default": null
+                },
+                {
+                    "key": "fileName",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 500,
+                    "encrypt": false,
+                    "default": null
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "userId_createdAt",
+                    "type": "key",
+                    "orders": [
+                        "ASC",
+                        "DESC"
+                    ],
+                    "columns": [
+                        "userId",
+                        "createdAt"
+                    ]
                 }
             ]
         }

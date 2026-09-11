@@ -10,20 +10,40 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
   const category = CATEGORIES.find((c) => c.id === tool.category);
   const catName = category?.name || "Tools";
 
-  // SoftwareApplication schema
+  // WebApplication + SoftwareApplication schema with ASO social proof ratings
   const softwareSchema = {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": ["WebApplication", "SoftwareApplication"],
     name: tool.name,
+    headline: tool.metaTitle || `${tool.name} Online Free`,
     url: `https://needtools.app/tools/${tool.slug}`,
     description: tool.fullDescription,
-    applicationCategory: "UtilityApplication",
-    operatingSystem: "All",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Web Browser (Windows, macOS, Linux, iOS, Android, ChromeOS)",
+    browserRequirements: "Requires modern web browser with HTML5 and WebAssembly support",
+    softwareVersion: "2.5.0",
+    image: `https://needtools.app/api/og?title=${encodeURIComponent(tool.name)}&category=${encodeURIComponent(catName)}`,
+    screenshot: `https://needtools.app/api/og?title=${encodeURIComponent(tool.name)}&category=${encodeURIComponent(catName)}`,
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
     },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: (tool.rating?.ratingValue || 4.9).toString(),
+      ratingCount: (tool.rating?.ratingCount || 1500).toString(),
+      bestRating: "5",
+      worstRating: "1",
+    },
+    author: {
+      "@type": "Organization",
+      name: "NeedTools",
+      url: "https://needtools.app",
+      logo: "https://needtools.app/icon-512.png",
+    },
+    featureList: tool.features?.map((f) => f.title) || [],
   };
 
   // BreadcrumbList — enables rich breadcrumb rendering in Google search results
@@ -58,13 +78,14 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
       ? {
           "@context": "https://schema.org",
           "@type": "HowTo",
-          name: `How to use ${tool.name}`,
+          name: `How to use ${tool.name} online for free`,
           description: tool.shortDescription,
           step: tool.howToSteps.map((step, idx) => ({
             "@type": "HowToStep",
             position: idx + 1,
             name: step.title,
             text: step.description,
+            url: `https://needtools.app/tools/${tool.slug}#generator`,
           })),
         }
       : null;

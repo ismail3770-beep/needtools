@@ -16,7 +16,7 @@ app = FastAPI(title="NeedTools PDF Compress Service")
 # ---------------------------------------------------------------------------
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "https://needtools.appwrite.app,https://needtools.vercel.app,http://localhost:3000,http://localhost:3001"
+    "https://needtools.app,https://needtools.appwrite.app,https://needtools.vercel.app,http://localhost:3000,http://localhost:3001"
 ).split(",")
 
 app.add_middleware(

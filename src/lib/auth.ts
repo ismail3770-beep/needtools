@@ -24,7 +24,13 @@ export async function loginWithEmail(email: string, password: string) {
 // ─── Email/Password Registration ────────────────────────────
 export async function registerWithEmail(name: string, email: string, password: string) {
   await account.create(ID_GEN.unique(), email, password, name);
-  return loginWithEmail(email, password);
+  const session = await loginWithEmail(email, password);
+  
+  // Trigger email verification
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://needtools.app";
+  await account.createVerification(`${origin}/dashboard?verified=true`);
+  
+  return session;
 }
 
 // ─── Get Current User ───────────────────────────────────────

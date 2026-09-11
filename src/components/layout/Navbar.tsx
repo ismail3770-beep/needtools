@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Search, Menu, X, Shield, LogOut, LayoutDashboard, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { CommandPalette } from "./CommandPalette";
 import { CATEGORIES } from "@/config/categories";
 import { Logo } from "@/components/ui/Logo";
+import { AllToolsMenu } from "./AllToolsMenu";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { getUserInitials } from "@/lib/auth";
 
@@ -85,12 +87,7 @@ export function Navbar() {
               >
                 Popular
               </Link>
-              <Link
-                href="/tools"
-                className="px-3 py-1.5 text-sm font-semibold text-[#64748B] dark:text-white/60 hover:text-[#0F172A] dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
-              >
-                All Tools
-              </Link>
+              <AllToolsMenu />
               <Link
                 href="/contact"
                 className="px-3 py-1.5 text-sm font-semibold text-[#64748B] dark:text-white/60 hover:text-[#0F172A] dark:hover:text-white rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
@@ -102,6 +99,7 @@ export function Navbar() {
             <div className="h-4 w-px bg-[#E2E8F0] dark:bg-white/10 mx-1 hidden lg:block" />
 
             {/* Light / Dark Mode Toggle Button */}
+            <LanguageSwitcher />
             <ThemeToggle />
 
             {/* Auth: User Avatar or Sign In */}
@@ -151,7 +149,8 @@ export function Navbar() {
             <button
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
               className="p-2 rounded-xl lg:hidden text-[#64748B] dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 border border-[#E2E8F0] dark:border-white/10"
-              aria-label="Open menu"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

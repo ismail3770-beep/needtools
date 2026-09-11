@@ -1,6 +1,6 @@
 "use client";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
 
 import React, { useState, useRef, useCallback, MouseEvent } from "react";
 import * as pdfjsLib from "pdfjs-dist";
@@ -245,45 +245,13 @@ export default function FillAndSignPdfUI() {
   return (
     <div className="w-full">
       {!file ? (
-        <div
-          ref={dropZoneRef}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className="relative overflow-hidden rounded-3xl border-2 border-dashed border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5/50 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-black/80 dark:bg-white/10 transition-colors group"
-        >
-          <div className="px-6 py-16 sm:py-20 flex flex-col items-center justify-center text-center z-10 relative">
-            <div className="w-20 h-20 mb-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all duration-300">
-              <PenTool className="w-10 h-10 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-black dark:text-white mb-3">
-              Upload PDF to Fill & Sign
-            </h3>
-            <p className="text-sm text-black/50 dark:text-white/50 max-w-md mx-auto mb-8">
-              Click anywhere on the PDF to add text, forms, or signatures easily.
-            </p>
-            
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".pdf,application/pdf"
-              className="hidden"
-            />
-            
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isProcessing}
-              className="px-8 py-3.5 bg-black dark:bg-white hover:bg-black/90 dark:hover:bg-white/90 text-white dark:text-black font-semibold rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isProcessing ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Loading...</>
-              ) : (
-                "Choose PDF File"
-              )}
-            </button>
-          </div>
-        </div>
+        <ToolDropzone
+          onFiles={(files) => files[0] && handleFileSelection(files[0])}
+          accept=".pdf,application/pdf"
+          multiple={false}
+          fileTypeLabel="PDFs"
+          buttonText="Choose Files"
+        />
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Header */}

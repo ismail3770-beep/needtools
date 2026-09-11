@@ -1,5 +1,6 @@
 "use client";
 
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 import React, { useState, useRef, useEffect } from "react";
 import { Upload, Download, Sparkles, RefreshCw, Sliders, Shield, FileImage, ArrowRight, Check, Image as ImageIcon, ArrowDown } from "lucide-react";
 import { formatBytes } from "@/lib/utils";
@@ -196,64 +197,14 @@ export default function ImageCompressorUI() {
     <div className="space-y-6">
       {/* Upload Drop Zone (Signature iLovePDF / Adobe Web Style) */}
       {!selectedFile ? (
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setIsDragOver(true);
-          }}
-          onDragLeave={() => setIsDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setIsDragOver(false);
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-              handleFile(e.dataTransfer.files[0]);
-            }
-          }}
-          onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-3xl p-8 sm:p-14 text-center cursor-pointer transition-all duration-200 ${
-            isDragOver
-              ? "border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30 scale-[0.99]"
-              : "border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5/50 dark:bg-neutral-950/40 hover:border-emerald-500/80 hover:bg-emerald-50/30 dark:hover:bg-emerald-950/10"
-          }`}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                handleFile(e.target.files[0]);
-              }
-            }}
-          />
-          <div className="max-w-md mx-auto space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-sm">
-              <Upload className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-1.5">
-              <h3 className="font-extrabold text-lg sm:text-xl text-black dark:text-white">
-                Select an image to compress
-              </h3>
-              <p className="text-xs sm:text-sm text-black/50 dark:text-white/50">
-                or drag and drop your photo here
-              </p>
-            </div>
-
-            {/* Big friendly Action Button */}
-            <div className="pt-2">
-              <span className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-black dark:bg-white hover:bg-black/90 dark:hover:bg-white/90 text-white dark:text-black font-bold text-sm shadow-md shadow-sm transition-transform active:scale-95">
-                <ImageIcon className="w-4 h-4" /> Select JPG, PNG or WebP
-              </span>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 pt-2 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              <Shield className="w-4 h-4 text-emerald-600" />
-              <span>100% Client-Side • Files stay securely on your device</span>
-            </div>
-          </div>
-        </div>
+        <ToolDropzone
+          onFiles={(files) => { if (files[0]) handleFile(files[0]); }}
+          accept="image/jpeg,image/png,image/webp"
+          multiple={false}
+          fileTypeLabel="images"
+          buttonText="Choose Files"
+          iconType="image"
+        />
       ) : (
         /* Workspace when file is loaded */
         <div className="space-y-6 animate-fade-in">

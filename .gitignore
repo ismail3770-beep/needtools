@@ -1,4 +1,4 @@
-﻿# dependencies
+# dependencies
 node_modules
 node_modules/
 /.pnp
@@ -20,6 +20,8 @@ out/
 # misc
 .DS_Store
 *.pem
+*.bak
+*.orig
 
 # debug
 npm-debug.log*
@@ -40,5 +42,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-
-
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/

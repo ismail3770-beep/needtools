@@ -99,6 +99,7 @@ export default function ImageResizerUI() {
   };
 
   const handleDownload = () => {
+    window.dispatchEvent(new CustomEvent('tool_processed', { detail: { fileName: 'processed_file' } }));
     if (!resizedUrl || !selectedFile) return;
     const link = document.createElement("a");
     link.href = resizedUrl;

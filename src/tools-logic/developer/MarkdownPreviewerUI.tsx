@@ -89,6 +89,7 @@ export default function MarkdownPreviewerUI() {
   };
 
   const handleDownload = () => {
+    window.dispatchEvent(new CustomEvent('tool_processed', { detail: { fileName: 'processed_file' } }));
     const blob = new Blob([markdown], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

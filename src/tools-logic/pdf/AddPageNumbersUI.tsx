@@ -1,6 +1,6 @@
 "use client";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import * as pdfjsLib from "pdfjs-dist";
@@ -259,49 +259,13 @@ export default function AddPageNumbersUI() {
 
       {/* Upload Zone */}
       {!file && (
-        <div
-          ref={dropZoneRef}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className="relative group flex flex-col items-center justify-center p-12 border-2 border-dashed border-black/20 dark:border-white/20 rounded-3xl bg-black/5 dark:bg-white/5 transition-all hover:bg-black/10 dark:hover:bg-white/10 hover:border-blue-400 dark:hover:border-blue-500/50 cursor-pointer overflow-hidden"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="application/pdf"
-            className="hidden"
-          />
-          <div className="w-16 h-16 mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
-            <UploadCloud className="w-8 h-8" />
-          </div>
-          <h3 className="text-xl font-bold text-black dark:text-white mb-2">
-            Upload PDF Document
-          </h3>
-          <p className="text-sm text-black/50 dark:text-white/50 text-center max-w-sm mb-4">
-            Drag and drop your PDF here, or click to browse. Max size 50MB.
-          </p>
-          <div className="flex items-center gap-4 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/10 dark:bg-white/10 text-xs font-semibold text-black/60 dark:text-white/60">
-              <FileBox className="w-3.5 h-3.5" />
-              .PDF Supported
-            </span>
-          </div>
-        <div className="mt-4 pointer-events-auto">
-          <CloudImportButtons multiple={false} onFiles={(files) => files[0] && handleFileSelection(files[0])} />
-        </div>
-          <div className="mt-2 pointer-events-none">
-            <span className="inline-flex items-center gap-2 px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-xl shadow-sm transition-all">
-              Choose PDF File
-            </span>
-          </div>
-          <p className="mt-6 text-xs font-medium text-black/40 dark:text-white/50 flex items-center justify-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            100% Private - Processed in your browser
-          </p>
-        </div>
+        <ToolDropzone
+          onFiles={(files) => files[0] && handleFileSelection(files[0])}
+          accept="application/pdf"
+          multiple={false}
+          fileTypeLabel="PDFs"
+          buttonText="Choose Files"
+        />
       )}
 
       {/* Configuration Area */}

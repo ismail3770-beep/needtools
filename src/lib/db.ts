@@ -136,7 +136,7 @@ export async function recordToolUsage(toolSlug: string) {
 // ─────────────────────────────────────────────────────────────
 
 const PINNED_TOOLS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_PINNED_TOOLS_COL_ID || "pinned_tools";
-const USER_TASKS_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_USER_TASKS_COL_ID || "user_tasks";
+const USER_HISTORY_COLLECTION_ID = process.env.NEXT_PUBLIC_APPWRITE_USER_HISTORY_COL_ID || "user_history";
 
 export interface PinnedTool {
   userId: string;
@@ -144,15 +144,11 @@ export interface PinnedTool {
   pinnedAt: string;
 }
 
-export interface UserTask {
+export interface UserHistory {
   userId: string;
-  toolSlug: string;
+  toolUsed: string;
   fileName: string;
-  fileSize?: number;
-  outputFileId?: string;
-  status: "completed" | "expired";
   createdAt: string;
-  expiresAt: string;
 }
 
 // ─── Pinned Tools ───────────────────────────────────────────
@@ -201,40 +197,34 @@ export async function removePinnedTool(userId: string, toolSlug: string) {
   }
 }
 
-// ─── User Tasks (Processing History) ────────────────────────
+// ─── User History (Processing History) ────────────────────────
 
-export async function getUserTasks(userId: string): Promise<UserTask[]> {
+export async function getUserHistory(userId: string): Promise<UserHistory[]> {
   try {
-    const res = await databases.listDocuments(DB_ID, USER_TASKS_COLLECTION_ID, [
+    const res = await databases.listDocuments(DB_ID, USER_HISTORY_COLLECTION_ID, [
       Query.equal("userId", userId),
       Query.orderDesc("createdAt"),
       Query.limit(50),
     ]);
     return res.documents.map((d) => ({
       userId: d.userId,
-      toolSlug: d.toolSlug,
+      toolUsed: d.toolUsed,
       fileName: d.fileName,
-      fileSize: d.fileSize,
-      outputFileId: d.outputFileId,
-      status: d.status,
       createdAt: d.createdAt,
-      expiresAt: d.expiresAt,
     }));
   } catch {
     return [];
   }
 }
 
-export async function saveUserTask(task: Omit<UserTask, "status" | "expiresAt">) {
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 60 min
+export async function saveUserHistory(history: Omit<UserHistory, "createdAt">) {
   try {
-    return await databases.createDocument(DB_ID, USER_TASKS_COLLECTION_ID, ID_GEN.unique(), {
-      ...task,
-      status: "completed",
-      expiresAt,
+    return await databases.createDocument(DB_ID, USER_HISTORY_COLLECTION_ID, ID_GEN.unique(), {
+      ...history,
+      createdAt: new Date().toISOString(),
     });
   } catch (err) {
-    if (process.env.NODE_ENV === "development") console.error("Save task error:", err);
+    if (process.env.NODE_ENV === "development") console.error("Save history error:", err);
     return null;
   }
 }

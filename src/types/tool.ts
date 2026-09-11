@@ -42,6 +42,23 @@ export interface ToolItem {
   howToSteps: ToolHowToStep[];
   features: ToolFeature[];
   faqs: ToolFaq[];
+  // SEO & ASO Metadata Enhancements
+  metaTitle?: string;
+  metaDescription?: string;
+  rating?: {
+    ratingValue: number;
+    ratingCount: number;
+  };
+  marketingBadges?: string[];
+  prosComparison?: {
+    feature: string;
+    needTools: string;
+    others: string;
+  }[];
+  seoGuide?: {
+    title: string;
+    content: string;
+  }[];
 }
 
 export interface CategoryInfo {
@@ -52,4 +69,5 @@ export interface CategoryInfo {
   colorClass: string;
   bgGradientClass: string;
   borderClass: string;
+  faqs?: ToolFaq[];
 }

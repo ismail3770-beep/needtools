@@ -42,7 +42,14 @@
       "Bash(git commit -m 'Add Link Analytics and Bio Pages marketing tools *)",
       "Bash(patch -p0)",
       "Bash(mkdir -p src/app/s/\\\\[slug\\\\])",
-      "Bash(grep -A 2 -B 2 \"// 6. AI\" src/config/toolsRegistry.ts)"
+      "Bash(grep -A 2 -B 2 \"// 6. AI\" src/config/toolsRegistry.ts)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:github.com)",
+      "Bash(npx next *)",
+      "Bash(docker --version)",
+      "Bash(tesseract --version)",
+      "Bash(soffice --version)",
+      "Bash(git push *)"
     ]
   }
 }

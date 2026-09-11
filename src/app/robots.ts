@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      disallow: ["/api/", "/d/", "/s/", "/admin/"],
     },
     sitemap: "https://needtools.app/sitemap.xml",
   };

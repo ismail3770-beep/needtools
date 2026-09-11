@@ -2,16 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { Clock, FileText, Download, AlertCircle } from "lucide-react";
-import type { UserTask } from "@/lib/db";
+import { Clock, FileText } from "lucide-react";
+import type { UserHistory } from "@/lib/db";
 import { getToolBySlug } from "@/config/toolsRegistry";
-
-function formatBytes(bytes?: number): string {
-  if (!bytes) return "—";
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -24,12 +17,8 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`;
 }
 
-function isExpired(expiresAt: string): boolean {
-  return new Date(expiresAt).getTime() < Date.now();
-}
-
 interface ProcessingHistoryProps {
-  tasks: UserTask[];
+  tasks: UserHistory[];
 }
 
 export function ProcessingHistory({ tasks }: ProcessingHistoryProps) {
@@ -49,8 +38,7 @@ export function ProcessingHistory({ tasks }: ProcessingHistoryProps) {
   return (
     <div className="space-y-2">
       {tasks.map((task, i) => {
-        const tool = getToolBySlug(task.toolSlug);
-        const expired = isExpired(task.expiresAt);
+        const tool = getToolBySlug(task.toolUsed);
 
         return (
           <div
@@ -66,25 +54,12 @@ export function ProcessingHistory({ tasks }: ProcessingHistoryProps) {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">{task.fileName}</p>
               <div className="flex items-center gap-2 text-xs text-[#64748B] dark:text-white/50 mt-0.5">
-                <span>{tool?.name || task.toolSlug}</span>
-                <span>•</span>
-                <span>{formatBytes(task.fileSize)}</span>
+                <span>{tool?.name || task.toolUsed}</span>
                 <span>•</span>
                 <Clock className="w-3 h-3" />
                 <span>{timeAgo(task.createdAt)}</span>
               </div>
             </div>
-
-            {/* Status / Download */}
-            {expired ? (
-              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-xs font-semibold shrink-0">
-                <AlertCircle className="w-3.5 h-3.5" /> Expired
-              </span>
-            ) : (
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-400 text-xs font-semibold hover:bg-brand-100 dark:hover:bg-brand-950/50 transition-colors shrink-0">
-                <Download className="w-3.5 h-3.5" /> Download
-              </button>
-            )}
           </div>
         );
       })}

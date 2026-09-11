@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
 import React, { useState, useRef, useCallback } from "react";
 import { PDFDocument } from "pdf-lib";
@@ -144,40 +144,33 @@ export default function PdfMergeUI() {
       {/* Upload Zone */}
       {!resultBlob && (
         <>
-          <div
-            ref={dropZoneRef}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className="relative group flex flex-col items-center justify-center p-10 border-2 border-dashed border-black/20 dark:border-white/20 rounded-3xl bg-black/5 dark:bg-white/5/50/20 transition-all hover:bg-black/5 dark:bg-white/5 dark:hover:bg-black/80 dark:bg-white/10/40 hover:border-blue-400 dark:hover:border-blue-500/50 cursor-pointer overflow-hidden"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
+          {files.length === 0 ? (
+            <ToolDropzone
+              onFiles={handleFileSelection}
               accept="application/pdf"
-              multiple
-              className="hidden"
+              multiple={true}
+              fileTypeLabel="PDFs"
+              buttonText="Choose Files"
             />
-            <div className="w-14 h-14 mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
-              <UploadCloud className="w-7 h-7" />
+          ) : (
+            <div className="flex justify-end mb-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="application/pdf"
+                multiple
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-brand-500 hover:bg-brand-600 text-white shadow-sm transition-colors"
+              >
+                + Add More PDFs
+              </button>
             </div>
-            <h3 className="text-lg font-bold text-black dark:text-white mb-2">
-              Add PDF Files
-            </h3>
-            <p className="text-sm text-black/50 dark:text-white/50 text-center max-w-sm">
-              Drag and drop multiple PDFs here, or click to browse.
-            </p>
-          <div className="mt-6 pointer-events-none">
-            <span className="inline-flex items-center gap-2 px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-xl shadow-sm transition-all">
-              Choose PDF File
-            </span>
-          </div>
-        <div className="mt-4 pointer-events-auto">
-          <CloudImportButtons multiple={true} onFiles={handleFileSelection} />
-        </div>
-        </div>
+          )}
 
           {/* File List */}
           {files.length > 0 && (

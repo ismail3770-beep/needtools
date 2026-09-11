@@ -1,6 +1,6 @@
 "use client";
 
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { UploadCloud, Trash2, Loader2, CheckCircle2, Download, FileBox, Settings2, FileArchive, ArrowRight, Archive, RefreshCw } from "lucide-react";
@@ -31,6 +31,7 @@ export default function PdfCompressorUI() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const MAX_FILES = user ? 50 : 5;
+  const MAX_TOTAL_SIZE_MB = user ? 100 : 50;
 
   const handleFiles = (selectedFiles: FileList | File[]) => {
     const validFiles = Array.from(selectedFiles).filter(file => {
@@ -147,50 +148,17 @@ export default function PdfCompressorUI() {
   return (
     <div className="space-y-6">
       {/* Upload Zone */}
-      <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-        onDragLeave={() => setIsDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setIsDragOver(false);
-          if (e.dataTransfer.files) handleFiles(e.dataTransfer.files);
-        }}
-        onClick={() => fileInputRef.current?.click()}
-        className={`relative group flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-3xl transition-all cursor-pointer overflow-hidden ${
-          isDragOver
-            ? "border-blue-500 bg-blue-50/50 dark:bg-blue-900/20"
-            : "border-black/20 dark:border-white/20 bg-black/5 dark:bg-white/5/50 hover:bg-black/5 dark:hover:bg-white/10/40 hover:border-blue-400 dark:hover:border-blue-500/50"
-        }`}
-      >
-        <input
-          type="file"
-          ref={fileInputRef}
-          multiple
+      {files.length === 0 && (
+        <ToolDropzone
+          onFiles={(newFiles) => handleFiles(newFiles as any)}
           accept="application/pdf"
-          className="hidden"
-          onChange={(e) => { if (e.target.files) handleFiles(e.target.files); }}
+          multiple={true}
+          fileTypeLabel="PDFs"
+          buttonText="Choose Files"
+          maxFiles={MAX_FILES}
+          maxSizeBytes={MAX_TOTAL_SIZE_MB * 1024 * 1024}
         />
-        <div className="w-16 h-16 mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
-          <UploadCloud className="w-8 h-8" />
-        </div>
-        <h3 className="text-xl font-bold text-black dark:text-white mb-2">
-          Select PDFs to compress
-        </h3>
-        <p className="text-sm text-black/50 dark:text-white/50 text-center max-w-sm mb-4">
-          Drag and drop multiple PDFs here (Max {MAX_FILES}). Max size 50MB per file.
-        </p>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/10 dark:bg-white/10 text-xs font-semibold text-black/60 dark:text-white/60 dark:text-slate-300">
-          <FileBox className="w-3.5 h-3.5" /> .PDF Supported
-        </span>
-        <div className="mt-6 pointer-events-none">
-          <span className="inline-flex items-center gap-2 px-8 py-3.5 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-xl shadow-sm transition-all">
-            Choose PDF Files
-          </span>
-        </div>
-        <div className="mt-4 pointer-events-auto">
-          <CloudImportButtons onFiles={(files) => handleFiles(files as any)} />
-        </div>
-      </div>
+      )}
 
       {files.length > 0 && (
         <div className="bg-black/5 dark:bg-white/5/30 rounded-2xl p-6 sm:p-8 border border-black/10 dark:border-white/10/50 space-y-6">
