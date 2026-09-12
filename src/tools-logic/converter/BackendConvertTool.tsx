@@ -32,6 +32,14 @@ export interface BackendConvertToolProps {
   note?: string;
   /** Reject files larger than this. Defaults to 30MB (backend limit). */
   maxSizeMB?: number;
+  /**
+   * Optional settings rendered ABOVE the dropzone.
+   *
+   * Conversion starts the moment a file is dropped, so any setting that
+   * affects the output has to be chosen first. Keep the parent's state in a
+   * closure over `convert` so the current value is used.
+   */
+  options?: React.ReactNode;
 }
 
 /**
@@ -52,6 +60,7 @@ export function BackendConvertTool({
   processingLabel = "Converting your file...",
   note,
   maxSizeMB = 30,
+  options,
 }: BackendConvertToolProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -106,6 +115,11 @@ export function BackendConvertTool({
 
       {!file && (
         <div className="space-y-4">
+          {options && (
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm p-5">
+              {options}
+            </div>
+          )}
           <ToolDropzone
             onFiles={handleFiles}
             accept={accept}
