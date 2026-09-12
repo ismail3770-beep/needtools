@@ -10,7 +10,18 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
   const category = CATEGORIES.find((c) => c.id === tool.category);
   const catName = category?.name || "Tools";
 
-  // WebApplication + SoftwareApplication schema with ASO social proof ratings
+  const ogImageUrl = `https://needtools.app/api/og?title=${encodeURIComponent(
+    tool.name
+  )}&category=${encodeURIComponent(catName)}`;
+
+  // IMPORTANT: only emit AggregateRating when we actually have collected ratings.
+  // Hardcoded or fabricated review markup violates Google's structured data
+  // policy ("Review snippet" spam) and can trigger a site-wide manual action,
+  // so there is deliberately no fallback value here.
+  const rating =
+    tool.rating && Number(tool.rating.ratingCount) > 0 ? tool.rating : null;
+
+  // WebApplication + SoftwareApplication schema
   const softwareSchema = {
     "@context": "https://schema.org",
     "@type": ["WebApplication", "SoftwareApplication"],
@@ -19,24 +30,29 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
     url: `https://needtools.app/tools/${tool.slug}`,
     description: tool.fullDescription,
     applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Web Browser (Windows, macOS, Linux, iOS, Android, ChromeOS)",
-    browserRequirements: "Requires modern web browser with HTML5 and WebAssembly support",
-    softwareVersion: "2.5.0",
-    image: `https://needtools.app/api/og?title=${encodeURIComponent(tool.name)}&category=${encodeURIComponent(catName)}`,
-    screenshot: `https://needtools.app/api/og?title=${encodeURIComponent(tool.name)}&category=${encodeURIComponent(catName)}`,
+    operatingSystem:
+      "Web Browser (Windows, macOS, Linux, iOS, Android, ChromeOS)",
+    browserRequirements:
+      "Requires modern web browser with HTML5 and WebAssembly support",
+    image: ogImageUrl,
+    screenshot: ogImageUrl,
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "USD",
       availability: "https://schema.org/InStock",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: (tool.rating?.ratingValue || 4.9).toString(),
-      ratingCount: (tool.rating?.ratingCount || 1500).toString(),
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(rating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: String(rating.ratingValue),
+            ratingCount: String(rating.ratingCount),
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }
+      : {}),
     author: {
       "@type": "Organization",
       name: "NeedTools",
