@@ -9,8 +9,16 @@ import json
 import time
 
 from pdf_processor import process_pdf
+from rate_limit import RateLimitMiddleware
 
 app = FastAPI(title="NeedTools PDF Edit Service")
+
+# ---------------------------------------------------------------------------
+# Rate limiting — added BEFORE CORS so CORSMiddleware ends up outermost and
+# 429 responses still carry CORS headers (otherwise the browser hides them).
+# Tune with RATE_LIMIT_MAX_REQUESTS / RATE_LIMIT_WINDOW_SECONDS.
+# ---------------------------------------------------------------------------
+app.add_middleware(RateLimitMiddleware)
 
 # ---------------------------------------------------------------------------
 # CORS — set ALLOWED_ORIGINS env var on Railway to your frontend domain
