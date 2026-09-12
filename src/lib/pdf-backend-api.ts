@@ -18,6 +18,14 @@ const PDF_COMPRESS_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "http://localhost:8002";
 
+/** Shared error unwrapping for every backend call. */
+async function unwrapError(response: Response, fallback: string): Promise<never> {
+  const errorData = await response.json().catch(() => ({}));
+  throw new Error(
+    (errorData as { detail?: string }).detail || `${fallback}: ${response.status}`
+  );
+}
+
 /**
  * Compress a PDF via the PDF Compress microservice.
  * @param file            The PDF File object from the browser.
@@ -41,13 +49,7 @@ export async function compressPdfWithBackend(
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      (errorData as { detail?: string }).detail ||
-        `Backend error: ${response.status}`
-    );
-  }
+  if (!response.ok) return unwrapError(response, "Backend error");
 
   return response.blob();
 }
@@ -76,13 +78,7 @@ export async function protectPdfWithBackend(
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      (errorData as { detail?: string }).detail ||
-        `Backend error: ${response.status}`
-    );
-  }
+  if (!response.ok) return unwrapError(response, "Backend error");
 
   return response.blob();
 }
@@ -107,13 +103,7 @@ export async function editPdfWithBackend(
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      (errorData as { detail?: string }).detail ||
-        `Backend error: ${response.status}`
-    );
-  }
+  if (!response.ok) return unwrapError(response, "Backend error");
 
   return response.blob();
 }
@@ -134,10 +124,7 @@ export async function ocrPdfWithBackend(
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as any).detail || `OCR failed: ${response.status}`);
-  }
+  if (!response.ok) return unwrapError(response, "OCR failed");
 
   return response.blob();
 }
@@ -154,10 +141,7 @@ export async function pdfToWordWithBackend(file: File): Promise<Blob> {
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
-  }
+  if (!response.ok) return unwrapError(response, "Conversion failed");
 
   return response.blob();
 }
@@ -174,10 +158,7 @@ export async function wordToPdfWithBackend(file: File): Promise<Blob> {
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
-  }
+  if (!response.ok) return unwrapError(response, "Conversion failed");
 
   return response.blob();
 }
@@ -194,10 +175,80 @@ export async function pdfToExcelWithBackend(file: File): Promise<Blob> {
     body: formData,
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error((errorData as any).detail || `Conversion failed: ${response.status}`);
-  }
+  if (!response.ok) return unwrapError(response, "Conversion failed");
+
+  return response.blob();
+}
+
+/**
+ * Convert an Office / text document to PDF via LibreOffice headless.
+ * Supports: .ppt .pptx .odp .xls .xlsx .ods .csv .doc .docx .odt .rtf .txt
+ */
+export async function officeToPdfWithBackend(file: File): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/office-to-pdf`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) return unwrapError(response, "Conversion failed");
+
+  return response.blob();
+}
+
+/**
+ * Convert a PDF into a PowerPoint deck (one slide per page).
+ * @param dpi Render resolution 72–300. Default 150.
+ */
+export async function pdfToPptWithBackend(file: File, dpi = 150): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("dpi", String(Math.round(dpi)));
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/pdf-to-ppt`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) return unwrapError(response, "Conversion failed");
+
+  return response.blob();
+}
+
+/**
+ * Convert a PDF into a single multi-page TIFF.
+ * @param dpi Render resolution 72–300. Default 150.
+ */
+export async function pdfToTiffWithBackend(file: File, dpi = 150): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("dpi", String(Math.round(dpi)));
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/pdf-to-tiff`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) return unwrapError(response, "Conversion failed");
+
+  return response.blob();
+}
+
+/**
+ * Convert a single-page or multi-page TIFF into a PDF.
+ */
+export async function tiffToPdfWithBackend(file: File): Promise<Blob> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${PDF_COMPRESS_URL}/convert/tiff-to-pdf`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) return unwrapError(response, "Conversion failed");
 
   return response.blob();
 }

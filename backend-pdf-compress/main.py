@@ -9,6 +9,8 @@ import time
 import subprocess
 import pymupdf as fitz
 
+from office_endpoints import router as office_router
+
 app = FastAPI(title="NeedTools PDF Compress Service")
 
 # ---------------------------------------------------------------------------
@@ -26,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Office / TIFF conversion endpoints live in office_endpoints.py
+app.include_router(office_router)
 
 TMP_DIR = "/tmp" if os.name != "nt" else "."
 
