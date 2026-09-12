@@ -15,6 +15,48 @@ interface UploadedImage {
   height: number;
 }
 
+/** Page dimensions in PDF points (1/72 inch). */
+const PAGE_SIZES: Record<"a4" | "letter", [number, number]> = {
+  a4: [595.28, 841.89],
+  letter: [612, 792],
+};
+
+/** Decode a base64 data URL into raw bytes for pdf-lib. */
+function dataUrlToBytes(dataUrl: string): Uint8Array {
+  const base64 = dataUrl.split(",")[1] ?? "";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
+ * Re-encode any input image to baseline JPEG on a white background.
+ * pdf-lib only embeds JPEG and PNG, and this also flattens transparency
+ * so WebP / alpha PNGs do not turn into black boxes.
+ */
+async function toJpegDataUrl(dataUrl: string): Promise<string> {
+  return new Promise<string>((resolve) => {
+    const imageEl = new Image();
+    imageEl.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = imageEl.naturalWidth;
+      canvas.height = imageEl.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imageEl, 0, 0);
+      }
+      resolve(canvas.toDataURL("image/jpeg", 0.95));
+    };
+    imageEl.onerror = () => resolve(dataUrl);
+    imageEl.src = dataUrl;
+  });
+}
+
 export default function ImageToPdfUI() {
   const { toast } = useToast();
   const [images, setImages] = useState<UploadedImage[]>([]);
@@ -63,30 +105,25 @@ export default function ImageToPdfUI() {
     setIsGenerating(true);
 
     try {
-      const { jsPDF } = await import("jspdf");
+      const { PDFDocument } = await import("pdf-lib");
+      const pdfDoc = await PDFDocument.create();
 
-      const doc = new jsPDF({
-        orientation: orientation,
-        unit: "pt",
-        format: pageSize,
-      });
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+      const [basePortraitWidth, basePortraitHeight] = PAGE_SIZES[pageSize];
+      const pageWidth = orientation === "landscape" ? basePortraitHeight : basePortraitWidth;
+      const pageHeight = orientation === "landscape" ? basePortraitWidth : basePortraitHeight;
 
       const marginSize = margin === "none" ? 0 : margin === "small" ? 20 : 40;
       const usableWidth = pageWidth - marginSize * 2;
       const usableHeight = pageHeight - marginSize * 2;
 
-      for (let idx = 0; idx < images.length; idx++) {
-        const img = images[idx];
-        if (idx > 0) {
-          doc.addPage(pageSize, orientation);
-        }
+      for (const img of images) {
+        const jpegDataUrl = await toJpegDataUrl(img.dataUrl);
+        const embedded = await pdfDoc.embedJpg(dataUrlToBytes(jpegDataUrl));
 
-        const imgRatio = img.width / img.height;
+        const imgRatio = embedded.width / embedded.height;
         const pageRatio = usableWidth / usableHeight;
 
+        // Contain the image inside the usable area without distortion.
         let renderWidth = usableWidth;
         let renderHeight = usableHeight;
 
@@ -96,31 +133,30 @@ export default function ImageToPdfUI() {
           renderWidth = usableHeight * imgRatio;
         }
 
-        const posX = marginSize + (usableWidth - renderWidth) / 2;
-        const posY = marginSize + (usableHeight - renderHeight) / 2;
-
-        const normalizedDataUrl = await new Promise<string>((resolve) => {
-          const imageEl = new Image();
-          imageEl.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = imageEl.naturalWidth;
-            canvas.height = imageEl.naturalHeight;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              ctx.drawImage(imageEl, 0, 0);
-            }
-            resolve(canvas.toDataURL("image/jpeg", 0.95));
-          };
-          imageEl.onerror = () => resolve(img.dataUrl);
-          imageEl.src = img.dataUrl;
+        // pdf-lib uses a bottom-up coordinate system, so centre on both axes.
+        const page = pdfDoc.addPage([pageWidth, pageHeight]);
+        page.drawImage(embedded, {
+          x: (pageWidth - renderWidth) / 2,
+          y: (pageHeight - renderHeight) / 2,
+          width: renderWidth,
+          height: renderHeight,
         });
-
-        doc.addImage(normalizedDataUrl, "JPEG", posX, posY, renderWidth, renderHeight, undefined, "FAST");
       }
 
-      doc.save(`NeedTools-Document-${Date.now()}.pdf`);
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes as unknown as BlobPart], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `NeedTools-Document-${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      window.dispatchEvent(
+        new CustomEvent("tool_processed", { detail: { fileName: images[0].name } })
+      );
     } catch (err) {
       console.error(err);
       toast("Failed to generate PDF. Please try again.", "error");
