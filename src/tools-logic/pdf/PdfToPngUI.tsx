@@ -1,50 +1,254 @@
 "use client";
-// Generated UI Component
+
 import React, { useState } from "react";
-import { UploadCloud, FileType, CheckCircle2 } from "lucide-react";
-import { CloudImportButtons } from "@/components/ui/CloudImportButtons";
+import * as pdfjsLib from "pdfjs-dist";
+import JSZip from "jszip";
+import { ImageIcon, Loader2, Download, Trash2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ToolDropzone } from "@/components/ui/ToolDropzone";
+import { downloadFileBlob } from "@/lib/pdf-backend-api";
+import { formatBytes } from "@/lib/utils";
+import { baseName } from "./lib/pageRange";
+
+if (typeof window !== "undefined") {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "/workers/pdf.worker.min.mjs";
+}
+
+interface RenderedPage {
+  pageNumber: number;
+  blob: Blob;
+  blobUrl: string;
+  size: number;
+}
 
 export default function PdfToPngUI() {
   const [file, setFile] = useState<File | null>(null);
+  const [scale, setScale] = useState(2);
+  const [pages, setPages] = useState<RenderedPage[]>([]);
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileSelection = (f: File) => {
-    setFile(f);
+  const handleFileSelection = (selected: File) => {
+    pages.forEach((p) => URL.revokeObjectURL(p.blobUrl));
+    setFile(selected);
+    setPages([]);
+    setError(null);
+  };
+
+  const reset = () => {
+    pages.forEach((p) => URL.revokeObjectURL(p.blobUrl));
+    setFile(null);
+    setPages([]);
+    setError(null);
+    setProgress({ current: 0, total: 0 });
+    setIsProcessing(false);
+  };
+
+  const process = async () => {
+    if (!file) return;
+    setIsProcessing(true);
+    setError(null);
+    setPages([]);
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+      setProgress({ current: 0, total: pdf.numPages });
+
+      const rendered: RenderedPage[] = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        if (!context) continue;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvasContext: context, viewport } as any).promise;
+
+        // PNG is lossless, so there is no quality parameter here.
+        const blob = await new Promise<Blob | null>((resolve) =>
+          canvas.toBlob(resolve, "image/png")
+        );
+        if (!blob) continue;
+
+        rendered.push({
+          pageNumber: i,
+          blob,
+          blobUrl: URL.createObjectURL(blob),
+          size: blob.size,
+        });
+        setProgress({ current: i, total: pdf.numPages });
+      }
+
+      setPages(rendered);
+      window.dispatchEvent(
+        new CustomEvent("tool_processed", { detail: { fileName: file.name } })
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong while rendering the PDF.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const downloadZip = async () => {
+    if (!file || pages.length === 0) return;
+    const folderName = baseName(file.name);
+    const zip = new JSZip();
+    const folder = zip.folder(folderName);
+    if (!folder) return;
+    pages.forEach((p) => folder.file(`page-${p.pageNumber}.png`, p.blob));
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    downloadFileBlob(zipBlob, `${folderName}-png.zip`);
+  };
+
+  const downloadOne = (p: RenderedPage) => {
+    if (!file) return;
+    downloadFileBlob(p.blob, `${baseName(file.name)}-page-${p.pageNumber}.png`);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm w-full max-w-3xl mx-auto">
-      <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center mb-4">
-        <FileType className="w-8 h-8" />
-      </div>
-      <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">Upload your file</h2>
-      <p className="text-zinc-500 dark:text-zinc-400 mb-8 text-center max-w-md">
-        Select a file from your device or import from cloud storage to begin.
-      </p>
-      
-      {!file ? (
-        <div className="w-full max-w-md relative">
-          <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-              <UploadCloud className="w-10 h-10 text-zinc-400 mb-3" />
-              <p className="mb-2 text-sm text-zinc-600 dark:text-zinc-400">
-                <span className="font-semibold">Click to upload</span> or drag and drop
+    <div className="space-y-6">
+      {!file && (
+        <ToolDropzone
+          onFiles={(files) => files[0] && handleFileSelection(files[0])}
+          accept="application/pdf"
+          multiple={false}
+          fileTypeLabel="PDFs"
+          buttonText="Choose File"
+        />
+      )}
+
+      {file && pages.length === 0 && (
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center shrink-0">
+                <ImageIcon className="w-6 h-6" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-zinc-900 dark:text-white truncate">{file.name}</h3>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{formatBytes(file.size)}</p>
+              </div>
+            </div>
+            <button
+              onClick={reset}
+              disabled={isProcessing}
+              className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+              title="Remove file"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            <label className="flex items-center justify-between text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+              <span>Resolution scale</span>
+              <span className="text-brand-600 dark:text-brand-400">{scale}x</span>
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="4"
+              step="0.5"
+              value={scale}
+              onChange={(e) => setScale(parseFloat(e.target.value))}
+              disabled={isProcessing}
+              className="w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-brand-600"
+            />
+            <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400">
+              <span>Standard</span>
+              <span>Ultra HD (larger files)</span>
+            </div>
+          </div>
+
+          {error && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <button
+            onClick={process}
+            disabled={isProcessing}
+            className="w-full px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Converting ({progress.current}/{progress.total})...
+              </>
+            ) : (
+              "Convert to PNG"
+            )}
+          </button>
+        </div>
+      )}
+
+      {pages.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+              <p className="font-semibold text-emerald-900 dark:text-emerald-300">
+                {pages.length} page{pages.length > 1 ? "s" : ""} converted
               </p>
             </div>
-            <input type="file" className="hidden" onChange={(e) => e.target.files && handleFileSelection(e.target.files[0])} />
-          </label>
-          <div className="mt-4 pointer-events-auto">
-            <CloudImportButtons multiple={false} onFiles={(files) => files[0] && handleFileSelection(files[0] as any)} />
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <button
+                onClick={reset}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 font-semibold rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              >
+                Convert Another
+              </button>
+              <button
+                onClick={downloadZip}
+                className="flex-1 sm:flex-none px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download ZIP
+              </button>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center p-6 bg-zinc-50 dark:bg-zinc-800 rounded-2xl w-full max-w-md text-center border border-zinc-200 dark:border-zinc-700">
-          <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4" />
-          <p className="text-sm font-medium text-zinc-900 dark:text-white w-full mb-6 whitespace-nowrap overflow-hidden text-ellipsis px-4">
-            {file.name}
-          </p>
-          <button className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors w-full">
-            Process File
-          </button>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {pages.map((p) => (
+              <div
+                key={p.pageNumber}
+                className="group relative rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="aspect-[1/1.4] w-full bg-zinc-100 dark:bg-zinc-800 relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.blobUrl}
+                    alt={`Page ${p.pageNumber}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-zinc-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      onClick={() => downloadOne(p)}
+                      className="p-3 bg-white text-zinc-900 rounded-full shadow-lg hover:scale-110 transition-transform"
+                      title="Download PNG"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-3 flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800">
+                  <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                    Page {p.pageNumber}
+                  </span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {formatBytes(p.size)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
