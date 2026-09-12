@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend (typecheck, lint, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # `npm ci` needs a lockfile; fall back to `npm install` if it is absent.
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # Placeholder values only — the build must not depend on real secrets.
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+          NEXT_PUBLIC_APPWRITE_ENDPOINT: https://sgp.cloud.appwrite.io/v1
+          NEXT_PUBLIC_APPWRITE_PROJECT_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_DATABASE_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_CONTACT_COL_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_FEEDBACK_COL_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_STATS_COL_ID: ci-placeholder
+          NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID: ci-placeholder
+
+  backends:
+    name: Python microservices (syntax check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Full dependency installs need system packages (Ghostscript, Tesseract,
+      # LibreOffice), so CI only verifies the sources compile.
+      - name: Compile backend sources
+        run: |
+          python -m compileall -q backend-pdf-compress backend-pdf-edit
