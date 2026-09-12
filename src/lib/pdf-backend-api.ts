@@ -1,22 +1,45 @@
 /**
- * Helper API to communicate with the NeedTools PDF Microservices.
+ * Helper API to communicate with the NeedTools PDF microservices.
  *
- * Two separate backend services:
- *   - PDF Edit Service   → NEXT_PUBLIC_PDF_EDIT_BACKEND_URL   (port 8001 locally)
- *   - PDF Compress Service → NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL (port 8002 locally)
+ * Backend URL resolution
+ * ----------------------
+ * There are two services, and historically three naming schemes were in use.
+ * The canonical order is now resolved in ONE place (`resolveBackendUrl`):
  *
- * Falls back to the legacy single NEXT_PUBLIC_BACKEND_URL if the new vars are not set.
+ *   1. NEXT_PUBLIC_PDF_EDIT_BACKEND_URL / NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL
+ *      -- preferred, per-service.
+ *   2. NEXT_PUBLIC_BACKEND_URL
+ *      -- legacy single-host fallback, kept so existing deployments keep working.
+ *   3. http://localhost:8001 (edit) / http://localhost:8002 (compress)
+ *      -- local development default.
+ *
+ * Note: only NEXT_PUBLIC_* variables are readable in the browser. A bare
+ * BACKEND_URL will NOT work here, which is why it is deliberately not read.
+ *
+ * Every server-dependent tool must call a helper from this file rather than
+ * using fetch directly, so URLs, error unwrapping and form field names stay in
+ * one place.
  */
 
-const PDF_EDIT_URL =
-  process.env.NEXT_PUBLIC_PDF_EDIT_BACKEND_URL ||
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "http://localhost:8001";
+/** Resolve a service URL from its per-service var, the legacy var, then a local default. */
+function resolveBackendUrl(
+  serviceUrl: string | undefined,
+  localDefault: string
+): string {
+  const resolved = serviceUrl || process.env.NEXT_PUBLIC_BACKEND_URL || localDefault;
+  // Trailing slashes would produce "//compress" style paths.
+  return resolved.replace(/\/+$/, "");
+}
 
-const PDF_COMPRESS_URL =
-  process.env.NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL ||
-  process.env.NEXT_PUBLIC_BACKEND_URL ||
-  "http://localhost:8002";
+const PDF_EDIT_URL = resolveBackendUrl(
+  process.env.NEXT_PUBLIC_PDF_EDIT_BACKEND_URL,
+  "http://localhost:8001"
+);
+
+const PDF_COMPRESS_URL = resolveBackendUrl(
+  process.env.NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL,
+  "http://localhost:8002"
+);
 
 /** Shared error unwrapping for every backend call. */
 async function unwrapError(response: Response, fallback: string): Promise<never> {
@@ -85,7 +108,20 @@ export async function protectPdfWithBackend(
 
 /**
  * Send a PDF file + edits payload to the PDF Edit microservice.
- * Uploads the actual file as FormData along with the edits JSON.
+ *
+ * The edits object is page-keyed with 1-based string keys, and coordinates are
+ * in viewport pixels at the scale the editor rendered at:
+ *
+ *   {
+ *     "__scale": 1.5,
+ *     "1": {
+ *       drawings:    [{ type, x, y, width, height, startX?, startY?, endX?, endY?, color? }],
+ *       editedTexts: [{ x, y, width, height, newText, format: { fontFamily, fontSize, color } }],
+ *       newTexts:    [{ x, y, text, format: { fontFamily, fontSize, color } }],
+ *       images:      [{ x, y, width, height, dataUrl }],
+ *     }
+ *   }
+ *
  * @param file   The original PDF File object from the browser.
  * @param edits  Page-keyed edits object (stringified as JSON).
  * @returns      The edited PDF as a Blob.
