@@ -1,8 +1,13 @@
 /**
  * useTextExtraction — extracts text items from a PDF page using pdfjs
  *
- * Returns ExtractedTextItem[] for each page with bounding boxes in
- * both viewport (scaled) and native PDF coordinates.
+ * Everything is returned in PDF points at scale 1. Two coordinate spaces are
+ * produced per item: top-down (for CSS) and raw PDF user space (for pdf-lib).
+ *
+ * Per-font ascent/descent metrics are read from pdfjs `textContent.styles`,
+ * which is what makes the overlay line up with the rendered glyphs. Using the
+ * full em box instead of the ascent (the previous behaviour) pushed every
+ * editable box a few points off the real baseline.
  */
 
 import { useCallback } from "react";
@@ -10,21 +15,53 @@ import type * as pdfjsLib from "pdfjs-dist";
 import type { ExtractedTextItem } from "./types";
 import { detectBold, detectItalic } from "./fontMapper";
 
+/** Fallback vertical metrics when the font program doesn't expose them */
+const FALLBACK_ASCENT = 0.78;
+const FALLBACK_DESCENT = 0.22;
+
+export interface PageExtraction {
+  items: ExtractedTextItem[];
+  pageWidth: number;
+  pageHeight: number;
+  /** True when the page carries a /Rotate entry (editing is best-effort) */
+  isRotated: boolean;
+}
+
+/** Map a pdfjs font family hint to a usable CSS font stack */
+function toCssFontStack(family: string, rawName: string): string {
+  const hint = `${family} ${rawName}`.toLowerCase();
+  if (hint.includes("mono") || hint.includes("courier")) {
+    return '"Courier New", Courier, monospace';
+  }
+  if (
+    hint.includes("serif") &&
+    !hint.includes("sans")
+  ) {
+    return '"Times New Roman", Times, Georgia, serif';
+  }
+  if (hint.includes("times") || hint.includes("georgia") || hint.includes("roman")) {
+    return '"Times New Roman", Times, Georgia, serif';
+  }
+  return 'Arial, "Helvetica Neue", Helvetica, sans-serif';
+}
+
+function finiteOr(value: unknown, fallback: number): number {
+  const num = typeof value === "number" ? value : NaN;
+  return Number.isFinite(num) && num !== 0 ? num : fallback;
+}
+
 /**
  * Extract all text items from a single PDF page.
- *
- * @param page   - The pdfjs page proxy
- * @param scale  - The viewport scale factor used for rendering
- * @returns      - Array of ExtractedTextItem with both viewport and PDF coords
  */
 export async function extractTextFromPage(
   page: pdfjsLib.PDFPageProxy,
-  pageNumber: number,
-  scale: number
-): Promise<ExtractedTextItem[]> {
-  const viewport = page.getViewport({ scale });
+  pageNumber: number
+): Promise<PageExtraction> {
+  const viewport = page.getViewport({ scale: 1 });
   const textContent = await page.getTextContent();
 
+  const pageWidth = viewport.width;
+  const pageHeight = viewport.height;
   const items: ExtractedTextItem[] = [];
 
   for (let i = 0; i < textContent.items.length; i++) {
@@ -32,69 +69,76 @@ export async function extractTextFromPage(
 
     // Skip empty text items and non-text items (e.g. marked content)
     if (!item.str || item.str.trim() === "") continue;
+    if (!Array.isArray(item.transform) || item.transform.length < 6) continue;
 
-    // item.transform = [scaleX, skewY, skewX, scaleY, tx, ty]
-    const tx = item.transform[4];
-    const ty = item.transform[5];
-    const scaleX = item.transform[0];
-    const scaleY = Math.abs(item.transform[3]);
+    // item.transform = [a, b, c, d, tx, ty]
+    const [a, b, c, d, tx, ty] = item.transform as number[];
 
-    // ── Native PDF coordinates (unscaled, for export) ──
-    const pdfX = tx;
-    const pdfY = ty;
-    const pdfWidth = item.width;
-    const pdfHeight = scaleY;
+    // Em size: use the vertical scale magnitude of the text matrix
+    const fontSize = Math.hypot(c, d) || Math.abs(d) || 1;
 
-    // ── Viewport coordinates (scaled, for UI overlay) ──
-    const [viewportX, viewportY] = viewport.convertToViewportPoint(tx, ty);
-    const viewWidth = item.width * scale;
-    const viewHeight = scaleY * scale;
+    // Rotated / skewed runs cannot be represented by an axis-aligned CSS box
+    const rotated = Math.abs(b) > 0.01 * Math.abs(a) + 0.01;
+
+    // ── Top-down coordinates for the overlay ──
+    const [viewX, viewBaselineY] = viewport.convertToViewportPoint(tx, ty);
 
     // Font analysis
-    const fontName = item.fontName || "unknown";
-    const style = textContent.styles ? textContent.styles[fontName] : null;
-    const fontFamily = style?.fontFamily || fontName;
+    const fontName: string = item.fontName || "unknown";
+    const style = textContent.styles ? (textContent.styles as any)[fontName] : null;
+    const fontFamily: string = style?.fontFamily || fontName;
+
+    const ascentRatio = Math.abs(finiteOr(style?.ascent, FALLBACK_ASCENT));
+    const descentRatio = Math.abs(finiteOr(style?.descent, FALLBACK_DESCENT));
 
     const isBold = detectBold(fontName) || detectBold(fontFamily);
     const isItalic = detectItalic(fontName) || detectItalic(fontFamily);
 
-    // Color extraction attempt (fallback to #000000)
+    // Colour extraction attempt (fallback to black)
     let color = "#000000";
     if (item.color && Array.isArray(item.color) && item.color.length === 3) {
-      const r = item.color[0].toString(16).padStart(2, '0');
-      const g = item.color[1].toString(16).padStart(2, '0');
-      const b = item.color[2].toString(16).padStart(2, '0');
-      color = `#${r}${g}${b}`;
+      const hex = item.color
+        .map((channel: number) =>
+          Math.max(0, Math.min(255, Math.round(channel)))
+            .toString(16)
+            .padStart(2, "0")
+        )
+        .join("");
+      color = `#${hex}`;
     }
 
     items.push({
       id: `p${pageNumber}-t${i}`,
       pageNumber,
       text: item.str,
-      // Viewport coords (Y is top-down after conversion)
-      x: viewportX,
-      y: viewportY - viewHeight, // baseline → top-left
-      width: viewWidth,
-      height: viewHeight,
-      // PDF native coords
-      pdfX,
-      pdfY,
-      pdfWidth,
-      pdfHeight,
-      // Font info
+
+      x: viewX,
+      baselineTop: viewBaselineY,
+      width: Math.abs(item.width) || fontSize * 0.5 * item.str.length,
+
+      pdfX: tx,
+      pdfBaselineY: ty,
+
+      fontSize,
+      ascent: ascentRatio * fontSize,
+      descent: descentRatio * fontSize,
+
       fontName,
       fontFamily,
-      fontSize: scaleY, // in PDF points
+      cssFontFamily: toCssFontStack(fontFamily, fontName),
       isBold,
       isItalic,
-      isUnderline: false,
-      color, // Default black or extracted rgb
-      alignment: 'left',
-      lineGroupId: "", // Will be set by textGrouping
+      color,
+      rotated,
     });
   }
 
-  return items;
+  return {
+    items,
+    pageWidth,
+    pageHeight,
+    isRotated: ((page as any).rotate ?? 0) % 360 !== 0,
+  };
 }
 
 /**
@@ -128,24 +172,16 @@ export async function pdfHasTextLayer(
 
 /**
  * React hook wrapper for text extraction.
- * Returns a stable callback that extracts text from a page.
  */
 export function useTextExtraction() {
   const extract = useCallback(
-    async (
-      page: pdfjsLib.PDFPageProxy,
-      pageNumber: number,
-      scale: number
-    ) => {
-      return extractTextFromPage(page, pageNumber, scale);
-    },
+    async (page: pdfjsLib.PDFPageProxy, pageNumber: number) =>
+      extractTextFromPage(page, pageNumber),
     []
   );
 
   const checkTextLayer = useCallback(
-    async (pdfDoc: pdfjsLib.PDFDocumentProxy) => {
-      return pdfHasTextLayer(pdfDoc);
-    },
+    async (pdfDoc: pdfjsLib.PDFDocumentProxy) => pdfHasTextLayer(pdfDoc),
     []
   );
 
