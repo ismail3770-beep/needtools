@@ -1,19 +1,26 @@
 /**
- * Helper API to communicate with the NeedTools PDF Microservices.
+ * Helper API to communicate with the NeedTools PDF backend.
  *
- * Two separate backend services:
- *   - PDF Edit Service   → NEXT_PUBLIC_PDF_EDIT_BACKEND_URL   (port 8001 locally)
- *   - PDF Compress Service → NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL (port 8002 locally)
+ * Unified backend (recommended) — ONE service hosting every endpoint:
+ *   NEXT_PUBLIC_PDF_BACKEND_URL            (local default: http://localhost:8000)
  *
- * Falls back to the legacy single NEXT_PUBLIC_BACKEND_URL if the new vars are not set.
+ * Legacy split deployments (still supported as fallback):
+ *   NEXT_PUBLIC_PDF_EDIT_BACKEND_URL       (port 8001 locally)
+ *   NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL   (port 8002 locally)
+ *
+ * Falls back to the legacy single NEXT_PUBLIC_BACKEND_URL if none are set.
  */
 
+const UNIFIED_PDF_URL = process.env.NEXT_PUBLIC_PDF_BACKEND_URL;
+
 const PDF_EDIT_URL =
+  UNIFIED_PDF_URL ||
   process.env.NEXT_PUBLIC_PDF_EDIT_BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "http://localhost:8001";
 
 const PDF_COMPRESS_URL =
+  UNIFIED_PDF_URL ||
   process.env.NEXT_PUBLIC_PDF_COMPRESS_BACKEND_URL ||
   process.env.NEXT_PUBLIC_BACKEND_URL ||
   "http://localhost:8002";
