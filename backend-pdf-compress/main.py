@@ -10,8 +10,16 @@ import subprocess
 import pymupdf as fitz
 
 from office_endpoints import router as office_router
+from rate_limit import RateLimitMiddleware
 
 app = FastAPI(title="NeedTools PDF Compress Service")
+
+# ---------------------------------------------------------------------------
+# Rate limiting — added BEFORE CORS so CORSMiddleware ends up outermost and
+# 429 responses still carry CORS headers (otherwise the browser hides them).
+# Tune with RATE_LIMIT_MAX_REQUESTS / RATE_LIMIT_WINDOW_SECONDS.
+# ---------------------------------------------------------------------------
+app.add_middleware(RateLimitMiddleware)
 
 # ---------------------------------------------------------------------------
 # CORS — set ALLOWED_ORIGINS env var on Railway to your frontend domain
