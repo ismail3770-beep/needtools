@@ -23,5 +23,11 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "backup_original", "backup_original_full"]
+  "exclude": [
+    "node_modules",
+    "backup_original",
+    "backup_original_full",
+    "vitest.config.ts",
+    "**/*.test.ts"
+  ]
 }

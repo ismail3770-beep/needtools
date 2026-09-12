@@ -41,6 +41,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Tests are skipped until `npm i -D vitest` adds a "test" script locally
+      # (doing it by hand here would desync package-lock.json).
+      - name: Unit tests
+        run: |
+          if grep -q '"test":' package.json; then
+            npm test
+          else
+            echo "No test script yet - skipping unit tests."
+          fi
+
       # Placeholder values only — the build must not depend on real secrets.
       - name: Build
         run: npm run build
