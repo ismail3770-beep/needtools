@@ -2,6 +2,8 @@ import React from "react";
 import { ToolItem } from "@/types/tool";
 import { CATEGORIES } from "@/config/categories";
 
+const BASE_URL = "https://needtools.app";
+
 interface JsonLdSchemaProps {
   tool: ToolItem;
 }
@@ -10,13 +12,16 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
   const category = CATEGORIES.find((c) => c.id === tool.category);
   const catName = category?.name || "Tools";
 
-  const ogImageUrl = `https://needtools.app/api/og?title=${encodeURIComponent(
-    tool.name
-  )}&category=${encodeURIComponent(catName)}`;
+  const ogImageUrl =
+    `${BASE_URL}/api/og?title=${encodeURIComponent(tool.name)}` +
+    `&category=${encodeURIComponent(catName)}`;
+
+  const toolUrl = `${BASE_URL}/tools/${tool.slug}`;
+  const categoryUrl = `${BASE_URL}/tools/${tool.category}`;
 
   // IMPORTANT: only emit AggregateRating when we actually have collected ratings.
   // Hardcoded or fabricated review markup violates Google's structured data
-  // policy ("Review snippet" spam) and can trigger a site-wide manual action,
+  // policy (review snippet spam) and can trigger a site-wide manual action,
   // so there is deliberately no fallback value here.
   const rating =
     tool.rating && Number(tool.rating.ratingCount) > 0 ? tool.rating : null;
@@ -27,7 +32,7 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
     "@type": ["WebApplication", "SoftwareApplication"],
     name: tool.name,
     headline: tool.metaTitle || `${tool.name} Online Free`,
-    url: `https://needtools.app/tools/${tool.slug}`,
+    url: toolUrl,
     description: tool.fullDescription,
     applicationCategory: "UtilitiesApplication",
     operatingSystem:
@@ -56,13 +61,13 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
     author: {
       "@type": "Organization",
       name: "NeedTools",
-      url: "https://needtools.app",
-      logo: "https://needtools.app/icon-512.png",
+      url: BASE_URL,
+      logo: `${BASE_URL}/icon-512.png`,
     },
     featureList: tool.features?.map((f) => f.title) || [],
   };
 
-  // BreadcrumbList — enables rich breadcrumb rendering in Google search results
+  // BreadcrumbList - enables rich breadcrumb rendering in Google search results
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -71,19 +76,19 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://needtools.app",
+        item: BASE_URL,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: catName,
-        item: `https://needtools.app/tools/${tool.category}`,
+        item: categoryUrl,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: tool.name,
-        item: `https://needtools.app/tools/${tool.slug}`,
+        item: toolUrl,
       },
     ],
   };
@@ -101,7 +106,7 @@ export function JsonLdSchema({ tool }: JsonLdSchemaProps) {
             position: idx + 1,
             name: step.title,
             text: step.description,
-            url: `https://needtools.app/tools/${tool.slug}#generator`,
+            url: `${toolUrl}#generator`,
           })),
         }
       : null;
